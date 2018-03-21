@@ -152,6 +152,6 @@ for training_step in range(1, TRAINING_STEPS + 1):
         torch.save(critic.state_dict(), "{0}critic".format(MODEL_OUTPUT_DIR))
 
         # Visualize samples
-        Plot.plot_samples(real_data=real_data_batch.data.numpy(),
-                          synthetic_data=synthetic_data_batch.data.numpy(),
+        Plot.plot_samples(real_data=real_data_batch.data.cpu().numpy(),
+                          synthetic_data=synthetic_data_batch.data.cpu().numpy(),
                           output_file="{0}sample_{1}".format(VIS_OUTPUT_DIR, training_step))
