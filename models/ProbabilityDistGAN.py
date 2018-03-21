@@ -30,7 +30,6 @@ class Generator(nn.Module):
         out = F.tanh(out)
 
         out = self.fc_3(out)
-        out = F.tanh(out)
         return out
 
     def train(self, critic_outputs):
