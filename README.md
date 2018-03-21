@@ -28,8 +28,6 @@ The goal of this project is to show that non-parametric tests that take advantag
 > chance that a statistically significant result indicates a true effect ([Ioannidis, 2005](http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0020124)). Put another way, findings with the 
 > least power will be the least reproducible, and thus a (prospective) power analysis is a critical component of any paper.
 
-[Power and sample size calculations for fMRI studies based on the prevalence of active peaks](https://www.biorxiv.org/content/biorxiv/early/2016/04/20/049429.full.pdf)
-
 > In a scientific study, one typically aims for a statistical power of 80%, implying that a true effect in the population is 
 > detected with a 80% chance. Power computations allow researchers to compute the minimal number of subjects to obtain the 
 > aimed statistical power. As such, power calculations avoid spending time and money on studies that are futile, and also 
