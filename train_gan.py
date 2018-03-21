@@ -30,14 +30,14 @@ os.makedirs(VIS_OUTPUT_DIR)
 os.makedirs(MODEL_OUTPUT_DIR)
 
 # ========== Hyperparameters ==========
-TRAINING_STEPS = 25000
+TRAINING_STEPS = 250000
 BATCH_SIZE = 50
 MODEL_DIMENSIONALITY = 512
 SAMPLE_LENGTH = 512
 NOISE_SAMPLE_LENGTH = 128
 CRITIC_UPDATES_PER_GENERATOR_UPDATE = 1
 LAMBDA = 10
-VISUALIZATION_INTERVAL = 1000
+VISUALIZATION_INTERVAL = 10000
 
 description_f = open(args.output_dir + 'description.txt', 'w')
 description_f.write('DATE: {0}\n\n'.format(datetime.datetime.now().strftime('%b-%d-%I%M%p-%G')))
