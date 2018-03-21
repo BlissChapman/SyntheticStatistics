@@ -31,10 +31,10 @@ os.makedirs(MODEL_OUTPUT_DIR)
 
 # ========== Hyperparameters ==========
 TRAINING_STEPS = 250000
-BATCH_SIZE = 50
-MODEL_DIMENSIONALITY = 512
-SAMPLE_LENGTH = 512
-NOISE_SAMPLE_LENGTH = 128
+BATCH_SIZE = 32
+MODEL_DIMENSIONALITY = 64
+SAMPLE_LENGTH = 64
+NOISE_SAMPLE_LENGTH = 64
 CRITIC_UPDATES_PER_GENERATOR_UPDATE = 1
 LAMBDA = 10
 VISUALIZATION_INTERVAL = 10000
@@ -72,6 +72,15 @@ def gaussian(batch_size, sample_length, cuda):
 
         yield gaussian_data
 
+def exponential(batch_size, sample_length, cuda):
+    while True:
+        exp_data = np.random.exponential(scale=1.0, size=(batch_size, sample_length))
+        exp_data = torch.Tensor(exp_data)
+
+        if cuda:
+            exp_data = exp_data.cuda()
+
+        yield exp_data
 
 def single_value(batch_size, sample_length, cuda):
     while True:
@@ -92,8 +101,7 @@ def uniform_noise(batch_size, sample_length, cuda):
 
     return uniform_data
 
-gaussian_generator = gaussian(BATCH_SIZE, SAMPLE_LENGTH, CUDA)
-single_value_generator = single_value(BATCH_SIZE, SAMPLE_LENGTH, CUDA)
+real_data_generator = exponential(BATCH_SIZE, SAMPLE_LENGTH, CUDA)
 
 # ========== Models ==========
 generator = models.ProbabilityDistGAN.Generator(input_width=NOISE_SAMPLE_LENGTH,
@@ -112,12 +120,12 @@ running_critic_loss = 0.0
 running_generator_loss = 0.0
 running_batch_start_time = timeit.default_timer()
 
-for training_step in range(1, TRAINING_STEPS + 1):
+for training_step in range(0, TRAINING_STEPS):
     print("BATCH: [{0}/{1}]\r".format(training_step % VISUALIZATION_INTERVAL, VISUALIZATION_INTERVAL), end='')
 
     # Train critic
     for critic_step in range(CRITIC_UPDATES_PER_GENERATOR_UPDATE):
-        real_data_batch = Variable(next(single_value_generator))
+        real_data_batch = Variable(next(real_data_generator))
         critic_noise_sample = Variable(uniform_noise(BATCH_SIZE, NOISE_SAMPLE_LENGTH, CUDA))
         synthetic_data_batch = generator(critic_noise_sample)
         critic_loss = critic.train(real_data_batch, synthetic_data_batch, LAMBDA)
@@ -132,29 +140,30 @@ for training_step in range(1, TRAINING_STEPS + 1):
 
     # Visualization
     if training_step % VISUALIZATION_INTERVAL == 0:
-        # Timing
-        running_batch_elapsed_time = timeit.default_timer() - running_batch_start_time
-        running_batch_start_time = timeit.default_timer()
+        if training_step != 0:
+            # Timing
+            running_batch_elapsed_time = timeit.default_timer() - running_batch_start_time
+            running_batch_start_time = timeit.default_timer()
 
-        num_training_batches_remaining = (TRAINING_STEPS - training_step) / BATCH_SIZE
-        estimated_minutes_remaining = (num_training_batches_remaining * running_batch_elapsed_time) / 60.0
+            num_training_batches_remaining = (TRAINING_STEPS - training_step) / BATCH_SIZE
+            estimated_minutes_remaining = (num_training_batches_remaining * running_batch_elapsed_time) / 60.0
 
-        print("===== TRAINING STEP {} | ~{:.0f} MINUTES REMAINING =====".format(training_step, estimated_minutes_remaining))
-        print("CRITIC LOSS:     {0}".format(running_critic_loss))
-        print("GENERATOR LOSS:  {0}\n".format(running_generator_loss))
+            print("===== TRAINING STEP {} | ~{:.0f} MINUTES REMAINING =====".format(training_step, estimated_minutes_remaining))
+            print("CRITIC LOSS:     {0}".format(running_critic_loss))
+            print("GENERATOR LOSS:  {0}\n".format(running_generator_loss))
 
-        # Loss histories
-        critic_losses_per_vis_interval.append(running_critic_loss)
-        generator_losses_per_vis_interval.append(running_generator_loss)
-        running_critic_loss = 0.0
-        running_generator_loss = 0.0
+            # Loss histories
+            critic_losses_per_vis_interval.append(running_critic_loss)
+            generator_losses_per_vis_interval.append(running_generator_loss)
+            running_critic_loss = 0.0
+            running_generator_loss = 0.0
 
-        Plot.plot_histories([critic_losses_per_vis_interval],
-                            ["Critic"],
-                            "{0}critic_loss_history.png".format(MODEL_OUTPUT_DIR))
-        Plot.plot_histories([generator_losses_per_vis_interval],
-                            ["Generator"],
-                            "{0}generator_loss_history.png".format(MODEL_OUTPUT_DIR))
+            Plot.plot_histories([critic_losses_per_vis_interval],
+                                ["Critic"],
+                                "{0}critic_loss_history.png".format(MODEL_OUTPUT_DIR))
+            Plot.plot_histories([generator_losses_per_vis_interval],
+                                ["Generator"],
+                                "{0}generator_loss_history.png".format(MODEL_OUTPUT_DIR))
 
         # Save model at checkpoint
         torch.save(generator.state_dict(), "{0}generator".format(MODEL_OUTPUT_DIR))

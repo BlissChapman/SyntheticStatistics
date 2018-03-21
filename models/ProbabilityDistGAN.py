@@ -24,10 +24,10 @@ class Generator(nn.Module):
 
     def forward(self, noise):
         out = self.fc_1(noise)
-        out = F.tanh(out)
+        out = F.sigmoid(out)
 
         out = self.fc_2(out)
-        out = F.tanh(out)
+        out = F.sigmoid(out)
 
         out = self.fc_3(out)
         return out
@@ -59,13 +59,13 @@ class Critic(nn.Module):
 
     def forward(self, data):
         out = self.fc_1(data)
-        out = F.tanh(out)
+        out = F.sigmoid(out)
 
         out = self.fc_2(out)
-        out = F.tanh(out)
+        out = F.sigmoid(out)
 
         out = self.fc_3(out)
-        out = F.tanh(out)
+        out = F.sigmoid(out)
         return out
 
     def train(self, real_data, synthetic_data, LAMBDA):

@@ -6,26 +6,27 @@ class Plot:
     def plot_samples(real_data, noise, synthetic_data, output_file):
         figure = plt.figure(figsize=(10, 10))
 
+        real_data = real_data.flatten()
+        noise = noise.flatten()
+        synthetic_data = synthetic_data.flatten()
+
         # Real Data
         real_ax = plt.subplot(6, 1, 1)
-        real_ax.hist(real_data[0])
-
-        real_ax_ln = plt.subplot(6, 1, 2)
-        real_ax_ln.plot(real_data[0])
+        real_ax.set_title('REAL')
+        real_ax.hist(real_data)
+        real_ax.set_xlim(-1, 5)
 
         # Noise
         noise_ax = plt.subplot(6, 1, 3)
-        noise_ax.hist(noise[0])
-
-        noise_ax_ln = plt.subplot(6, 1, 4)
-        noise_ax_ln.plot(noise[0])
+        noise_ax.set_title('NOISE')
+        noise_ax.hist(noise)
+        noise_ax.set_xlim(-1, 5)
 
         # Synthetic
         synthetic_ax = plt.subplot(6, 1, 5)
-        synthetic_ax.hist(synthetic_data[0])
-
-        synth_ax_ln = plt.subplot(6, 1, 6)
-        synth_ax_ln.plot(synthetic_data[0])
+        synthetic_ax.set_title('SYNTHETIC')
+        synthetic_ax.hist(synthetic_data)
+        synthetic_ax.set_xlim(-1, 5)
 
         figure.savefig(output_file)
         plt.close()
