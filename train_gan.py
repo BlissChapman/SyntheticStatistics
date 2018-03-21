@@ -32,8 +32,8 @@ os.makedirs(MODEL_OUTPUT_DIR)
 # ========== Hyperparameters ==========
 TRAINING_STEPS = 25000
 BATCH_SIZE = 50
-MODEL_DIMENSIONALITY = 64
-SAMPLE_LENGTH = 4096
+MODEL_DIMENSIONALITY = 512
+SAMPLE_LENGTH = 512
 NOISE_SAMPLE_LENGTH = 128
 CRITIC_UPDATES_PER_GENERATOR_UPDATE = 1
 LAMBDA = 10
@@ -72,15 +72,6 @@ def gaussian(batch_size, sample_length, cuda):
 
         yield gaussian_data
 
-def uniform(batch_size, sample_length, cuda):
-    while True:
-        uniform_data = np.random.uniform(low=0.0, high=1.0, size=(batch_size, sample_length))
-        uniform_data = torch.Tensor(uniform_data)
-
-        if cuda:
-            uniform_data = uniform_data.cuda()
-
-        yield uniform_data
 
 def single_value(batch_size, sample_length, cuda):
     while True:
@@ -92,14 +83,17 @@ def single_value(batch_size, sample_length, cuda):
 
         yield single_value_data
 
+def uniform_noise(batch_size, sample_length, cuda):
+    uniform_data = np.random.uniform(low=0.0, high=1.0, size=(batch_size, sample_length))
+    uniform_data = torch.Tensor(uniform_data)
+
+    if cuda:
+        uniform_data = uniform_data.cuda()
+
+    return uniform_data
+
 gaussian_generator = gaussian(BATCH_SIZE, SAMPLE_LENGTH, CUDA)
-uniform_generator = uniform(BATCH_SIZE, SAMPLE_LENGTH, CUDA)
 single_value_generator = single_value(BATCH_SIZE, SAMPLE_LENGTH, CUDA)
-
-gaussian_noise_generator = gaussian(BATCH_SIZE, NOISE_SAMPLE_LENGTH, CUDA)
-uniform_noise_generator = uniform(BATCH_SIZE, NOISE_SAMPLE_LENGTH, CUDA)
-single_value_noise_generator = single_value(BATCH_SIZE, NOISE_SAMPLE_LENGTH, CUDA)
-
 
 # ========== Models ==========
 generator = models.ProbabilityDistGAN.Generator(input_width=NOISE_SAMPLE_LENGTH,
@@ -124,13 +118,13 @@ for training_step in range(1, TRAINING_STEPS + 1):
     # Train critic
     for critic_step in range(CRITIC_UPDATES_PER_GENERATOR_UPDATE):
         real_data_batch = Variable(next(single_value_generator))
-        critic_noise_sample = Variable(next(uniform_noise_generator))
+        critic_noise_sample = Variable(uniform_noise(BATCH_SIZE, NOISE_SAMPLE_LENGTH, CUDA))
         synthetic_data_batch = generator(critic_noise_sample)
         critic_loss = critic.train(real_data_batch, synthetic_data_batch, LAMBDA)
         running_critic_loss += critic_loss.data[0]
 
     # Train generator
-    generator_noise_sample = Variable(next(uniform_noise_generator))
+    generator_noise_sample = Variable(uniform_noise(BATCH_SIZE, NOISE_SAMPLE_LENGTH, CUDA))
     synthetic_data_batch = generator(generator_noise_sample)
     critic_output = critic(synthetic_data_batch)
     generator_loss = generator.train(critic_output)
@@ -168,5 +162,6 @@ for training_step in range(1, TRAINING_STEPS + 1):
 
         # Visualize samples
         Plot.plot_samples(real_data=real_data_batch.data.cpu().numpy(),
+                          noise=generator_noise_sample.data.cpu().numpy(),
                           synthetic_data=synthetic_data_batch.data.cpu().numpy(),
                           output_file="{0}sample_{1}".format(VIS_OUTPUT_DIR, training_step))
