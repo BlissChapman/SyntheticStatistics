@@ -10,6 +10,7 @@ import shutil
 import timeit
 import torch
 
+from utils.noise import uniform_noise
 from utils.plot import Plot
 from torch.autograd import Variable
 
@@ -67,7 +68,7 @@ def gaussian(dataset_length):
     return np.random.normal(loc=0.0, scale=1.0, size=(dataset_length))
 
 def exponential(dataset_length):
-    return np.random.exponential(scale=5.0, size=(dataset_length))
+    return np.random.exponential(scale=15.0, size=(dataset_length))
 
 def single_value(dataset_length):
     return 5*np.ones((dataset_length))
@@ -94,15 +95,6 @@ def batch_generator(data, sample_length, batch_size, cuda):
                 data_batch = data_batch.cuda()
 
             yield data_batch
-
-def uniform_noise(sample_length, batch_size, cuda):
-    uniform_data = np.random.uniform(low=0.0, high=1.0, size=(batch_size, sample_length))
-    uniform_data = torch.Tensor(uniform_data)
-
-    if cuda:
-        uniform_data = uniform_data.cuda()
-
-    return uniform_data
 
 real_data = exponential(DATASET_LENGTH)
 real_data_generator = batch_generator(real_data, SAMPLE_LENGTH, BATCH_SIZE, CUDA)
