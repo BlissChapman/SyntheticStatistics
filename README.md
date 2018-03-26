@@ -19,8 +19,7 @@ But why assume the data is Gaussian?
 The goal of this project is to show that recovering the underlying data distribution can enable powerful non-parametric tests that take advantage of unlimited synthetic data.  Hopefully this leads to more accurate experimental power estimates and better research :D
 
 ## Experiments (MORE TO COME)
-1. Fit two GANs to two gaussian distributions with different means. Run an MMD test and a two sample t-test and compare the results. Repeat for two identical gaussian distributions.
-2. Fit two GANs to two different exponential distributions. Run an MMD test and a two sample t-test and compare the results. Repeat for two identical exponential distributions.
+1. Fit two GANs to two different exponential distributions. Run an MMD test and a two sample t-test and compare the results. Repeat for two identical exponential distributions.
 
 ## Neuroscientific Application
 > Mounting evidence over the last few years suggest that published neuroscience research suffer from low power, and especially
@@ -33,6 +32,4 @@ The goal of this project is to show that recovering the underlying data distribu
 > aimed statistical power. As such, power calculations avoid spending time and money on studies that are futile, and also
 > prevent wasting time and money adding extra subjects, when sufficient power was already available.
 
-[Power and sample size calculations for fMRI studies based on the prevalence of active peaks](https://www.biorxiv.org/content/biorxiv/early/2016/04/20/049429.full.pdf)
-
-Cost-effective statistical power estimation has real implications for neuroscientific experiment design. Generative modeling can help estimate and improve the power of statistical tests.
+Source: [Power and sample size calculations for fMRI studies based on the prevalence of active peaks](https://www.biorxiv.org/content/biorxiv/early/2016/04/20/049429.full.pdf)

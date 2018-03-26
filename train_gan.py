@@ -31,6 +31,7 @@ os.makedirs(MODEL_OUTPUT_DIR)
 
 # ========== Hyperparameters ==========
 TRAINING_STEPS = 250000
+DATASET_LENGTH = 100000
 BATCH_SIZE = 32
 MODEL_DIMENSIONALITY = 64
 SAMPLE_LENGTH = 64
@@ -62,37 +63,39 @@ if CUDA:
     torch.cuda.manual_seed(1)
 
 # ========== Data ==========
-def gaussian(batch_size, sample_length, cuda):
+def gaussian(dataset_length):
+    return np.random.normal(loc=0.0, scale=1.0, size=(dataset_length))
+
+def exponential(dataset_length):
+    return np.random.exponential(scale=5.0, size=(dataset_length))
+
+def single_value(dataset_length):
+    return 5*np.ones((dataset_length))
+
+def batch_generator(data, sample_length, batch_size, cuda):
+    epoch_length = len(data)
+
     while True:
-        gaussian_data = np.random.normal(loc=0.0, scale=1.0, size=(batch_size, sample_length))
-        gaussian_data = torch.Tensor(gaussian_data)
+        # Shuffle data between epochs:
+        np.random.shuffle(real_data)
 
-        if cuda:
-            gaussian_data = gaussian_data.cuda()
+        for i in range(0, epoch_length, sample_length*batch_size):
+            # Retrieve data batch
+            data_batch_len = sample_length*batch_size
+            data_batch = np.array(data[i:i + data_batch_len])
+            if len(data_batch) != data_batch_len:
+                continue
+            data_batch = data_batch.reshape((batch_size, sample_length))
 
-        yield gaussian_data
+            # Create torch tensors
+            data_batch = torch.Tensor(data_batch)
 
-def exponential(batch_size, sample_length, cuda):
-    while True:
-        exp_data = np.random.exponential(scale=1.0, size=(batch_size, sample_length))
-        exp_data = torch.Tensor(exp_data)
+            if cuda:
+                data_batch = data_batch.cuda()
 
-        if cuda:
-            exp_data = exp_data.cuda()
+            yield data_batch
 
-        yield exp_data
-
-def single_value(batch_size, sample_length, cuda):
-    while True:
-        single_value_data = 5*np.ones((batch_size, sample_length))
-        single_value_data = torch.Tensor(single_value_data)
-
-        if cuda:
-            single_value_data = single_value_data.cuda()
-
-        yield single_value_data
-
-def uniform_noise(batch_size, sample_length, cuda):
+def uniform_noise(sample_length, batch_size, cuda):
     uniform_data = np.random.uniform(low=0.0, high=1.0, size=(batch_size, sample_length))
     uniform_data = torch.Tensor(uniform_data)
 
@@ -101,7 +104,8 @@ def uniform_noise(batch_size, sample_length, cuda):
 
     return uniform_data
 
-real_data_generator = exponential(BATCH_SIZE, SAMPLE_LENGTH, CUDA)
+real_data = exponential(DATASET_LENGTH)
+real_data_generator = batch_generator(real_data, SAMPLE_LENGTH, BATCH_SIZE, CUDA)
 
 # ========== Models ==========
 generator = models.ProbabilityDistGAN.Generator(input_width=NOISE_SAMPLE_LENGTH,
@@ -126,13 +130,13 @@ for training_step in range(0, TRAINING_STEPS):
     # Train critic
     for critic_step in range(CRITIC_UPDATES_PER_GENERATOR_UPDATE):
         real_data_batch = Variable(next(real_data_generator))
-        critic_noise_sample = Variable(uniform_noise(BATCH_SIZE, NOISE_SAMPLE_LENGTH, CUDA))
+        critic_noise_sample = Variable(uniform_noise(NOISE_SAMPLE_LENGTH, BATCH_SIZE, CUDA))
         synthetic_data_batch = generator(critic_noise_sample)
         critic_loss = critic.train(real_data_batch, synthetic_data_batch, LAMBDA)
         running_critic_loss += critic_loss.data[0]
 
     # Train generator
-    generator_noise_sample = Variable(uniform_noise(BATCH_SIZE, NOISE_SAMPLE_LENGTH, CUDA))
+    generator_noise_sample = Variable(uniform_noise(NOISE_SAMPLE_LENGTH, BATCH_SIZE, CUDA))
     synthetic_data_batch = generator(generator_noise_sample)
     critic_output = critic(synthetic_data_batch)
     generator_loss = generator.train(critic_output)

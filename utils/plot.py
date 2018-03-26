@@ -13,20 +13,18 @@ class Plot:
         # Real Data
         real_ax = plt.subplot(6, 1, 1)
         real_ax.set_title('REAL')
-        real_ax.hist(real_data)
-        real_ax.set_xlim(-1, 5)
+        real_ax.hist(real_data, bins=15)
 
         # Noise
         noise_ax = plt.subplot(6, 1, 3)
         noise_ax.set_title('NOISE')
-        noise_ax.hist(noise)
-        noise_ax.set_xlim(-1, 5)
+        noise_ax.hist(noise, bins=15)
+        noise_ax.set_xlim((-1, 2))
 
         # Synthetic
         synthetic_ax = plt.subplot(6, 1, 5)
         synthetic_ax.set_title('SYNTHETIC')
-        synthetic_ax.hist(synthetic_data)
-        synthetic_ax.set_xlim(-1, 5)
+        synthetic_ax.hist(synthetic_data, bins=15)
 
         figure.savefig(output_file)
         plt.close()

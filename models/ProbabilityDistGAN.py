@@ -14,7 +14,9 @@ class Generator(nn.Module):
 
         self.fc_1 = nn.Linear(input_width, dimensionality)
         self.fc_2 = nn.Linear(dimensionality, dimensionality)
-        self.fc_3 = nn.Linear(dimensionality, output_width)
+        self.fc_3 = nn.Linear(dimensionality, dimensionality)
+        self.fc_4 = nn.Linear(dimensionality, dimensionality)
+        self.fc_5 = nn.Linear(dimensionality, output_width)
 
         self.optimizer = optim.Adam(self.parameters(), lr=1e-4, betas=(0.5, 0.9))
         self.cudaEnabled = cudaEnabled
@@ -24,12 +26,18 @@ class Generator(nn.Module):
 
     def forward(self, noise):
         out = self.fc_1(noise)
-        out = F.sigmoid(out)
+        out = F.leaky_relu(out, inplace=True)
 
         out = self.fc_2(out)
-        out = F.sigmoid(out)
+        out = F.leaky_relu(out, inplace=True)
 
         out = self.fc_3(out)
+        out = F.leaky_relu(out, inplace=True)
+
+        out = self.fc_4(out)
+        out = F.leaky_relu(out, inplace=True)
+
+        out = self.fc_5(out)
         return out
 
     def train(self, critic_outputs):
@@ -49,7 +57,9 @@ class Critic(nn.Module):
 
         self.fc_1 = nn.Linear(input_width, dimensionality)
         self.fc_2 = nn.Linear(dimensionality, dimensionality)
-        self.fc_3 = nn.Linear(dimensionality, 1)
+        self.fc_3 = nn.Linear(dimensionality, dimensionality)
+        self.fc_4 = nn.Linear(dimensionality, dimensionality)
+        self.fc_5 = nn.Linear(dimensionality, 1)
 
         self.cudaEnabled = cudaEnabled
         self.optimizer = optim.Adam(self.parameters(), lr=1e-4, betas=(0.5, 0.9))
@@ -59,13 +69,18 @@ class Critic(nn.Module):
 
     def forward(self, data):
         out = self.fc_1(data)
-        out = F.sigmoid(out)
+        out = F.leaky_relu(out, inplace=True)
 
         out = self.fc_2(out)
-        out = F.sigmoid(out)
+        out = F.leaky_relu(out, inplace=True)
 
         out = self.fc_3(out)
-        out = F.sigmoid(out)
+        out = F.leaky_relu(out, inplace=True)
+
+        out = self.fc_4(out)
+        out = F.leaky_relu(out, inplace=True)
+
+        out = self.fc_5(out)
         return out
 
     def train(self, real_data, synthetic_data, LAMBDA):
