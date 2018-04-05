@@ -34,6 +34,9 @@ The goal of this project is to show that recovering the underlying data distribu
 ##### [ALTERNATIVE] ChiSquare(9) vs Exp(9)
 ![ChiSquare(9) vs Exp(9)](examples/sample_size_vs_power/chi_9_vs_exp_9.png)
 
+##### [ALTERNATIVE] GaussianMix vs Exp(9)
+![GaussianMix vs Exp(9)](examples/sample_size_vs_power/gaussian_mix_vs_exp_9.png)
+
 ## Neuroscientific Application
 > Mounting evidence over the last few years suggest that published neuroscience research suffer from low power, and especially
 > for published fMRI experiments. Not only does low power decrease the chance of detecting a true effect, it also reduces the

@@ -1,5 +1,4 @@
-import matplotlib
-matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 import argparse
 import datetime
@@ -10,7 +9,7 @@ import shutil
 import timeit
 import torch
 
-from utils.noise import uniform_noise
+from utils.sampling import *
 from utils.plot import Plot
 from torch.autograd import Variable
 
@@ -64,18 +63,6 @@ if CUDA:
     torch.cuda.manual_seed(1)
 
 # ========== Data ==========
-def gaussian(dataset_length):
-    return np.random.normal(loc=1, scale=1.0, size=(dataset_length))
-
-def exponential(dataset_length):
-    return np.random.exponential(scale=9.0, size=(dataset_length))
-
-def chi_square(dataset_length):
-    return np.random.chisquare(9, size=dataset_length)
-
-def single_value(dataset_length):
-    return 5*np.ones((dataset_length))
-
 def batch_generator(data, sample_length, batch_size, cuda):
     epoch_length = len(data)
 
@@ -99,7 +86,7 @@ def batch_generator(data, sample_length, batch_size, cuda):
 
             yield data_batch
 
-real_data = exponential(DATASET_LENGTH)
+real_data = gaussian_mixture(DATASET_LENGTH)
 real_data_generator = batch_generator(real_data, SAMPLE_LENGTH, BATCH_SIZE, CUDA)
 
 # ========== Models ==========

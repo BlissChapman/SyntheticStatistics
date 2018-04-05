@@ -6,6 +6,7 @@ import shutil
 
 from scipy.stats import ttest_ind
 from mmd import mmd
+from utils.sampling import *
 
 # Parse arguments
 parser = argparse.ArgumentParser(description="Compare classical two sample t test to non-parametric methods.")
@@ -22,8 +23,8 @@ os.makedirs(args.output_dir)
 # dataset_1 = np.random.normal(0, 1, 1000)
 # dataset_2 = np.random.normal(0, 1, 1000)
 
-dataset_1 = np.random.chisquare(9, size=1000)
-dataset_2 = np.random.chisquare(9, size=1000)
+dataset_1 = gaussian_mixture(1000)
+dataset_2 = exponential(1000)
 
 # dataset_2 = np.random.exponential(9, size=1000)
 
