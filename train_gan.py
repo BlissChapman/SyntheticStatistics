@@ -31,7 +31,7 @@ os.makedirs(VIS_OUTPUT_DIR)
 os.makedirs(MODEL_OUTPUT_DIR)
 
 # ========== Hyperparameters ==========
-TRAINING_STEPS = 250000
+TRAINING_STEPS = 150000
 DATASET_LENGTH = 100000
 BATCH_SIZE = 32
 MODEL_DIMENSIONALITY = 64
@@ -65,10 +65,13 @@ if CUDA:
 
 # ========== Data ==========
 def gaussian(dataset_length):
-    return np.random.normal(loc=0.0, scale=1.0, size=(dataset_length))
+    return np.random.normal(loc=1, scale=1.0, size=(dataset_length))
 
 def exponential(dataset_length):
-    return np.random.exponential(scale=15.0, size=(dataset_length))
+    return np.random.exponential(scale=9.0, size=(dataset_length))
+
+def chi_square(dataset_length):
+    return np.random.chisquare(9, size=dataset_length)
 
 def single_value(dataset_length):
     return 5*np.ones((dataset_length))

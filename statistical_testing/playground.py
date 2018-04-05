@@ -9,7 +9,7 @@ alpha = 0.05
 n_1 = 10**3
 n_2 = 10**3
 num_bootstrap_replicates = 5
-alt_thetas = np.linspace(-2.0, 2.0, 25)
+alt_thetas = np.linspace(-2.0, 2.0, 15)
 figure = plt.figure(figsize=(10, 30))
 
 # Simulate alternate means and compute power of a test between distributions
@@ -67,4 +67,4 @@ power_ax.set_xlabel('Alternative Means')
 power_ax.set_ylabel('Power of Tests')
 power_ax.set_ylim([-0.1, 1.1])
 power_ax.legend("TM",loc="upper right")
-figure.savefig('OUTPUT/test2.png')
+figure.savefig('OUTPUT/test.png')

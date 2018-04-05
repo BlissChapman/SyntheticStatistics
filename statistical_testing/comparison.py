@@ -1,4 +1,5 @@
 import argparse
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import shutil
@@ -18,21 +19,36 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # Load datasets
-dataset_1 = np.random.chisquare(9, size=1000)#np.load(args.dataset_1)[0:1000]
-dataset_2 = np.random.exponential(scale=9.0, size=1000)#np.load(args.dataset_2)[0:1000]
+# dataset_1 = np.random.normal(0, 1, 1000)
+# dataset_2 = np.random.normal(1, 1, 1000)
+
+dataset_1 = np.random.chisquare(9, size=1000)
+dataset_2 = np.random.exponential(9, size=1000)
+
+syn_dataset_1 = np.load(args.dataset_1)
+syn_dataset_2 = np.load(args.dataset_2)
+
+# Plot datasets
+figure, axes = plt.subplots(nrows=3, ncols=1)
+axes[0].hist(dataset_1, fc=(0, 0, 1, 0.5))
+axes[0].hist(dataset_2, fc=(0.5, 0.5, 0.5, 0.5))
+axes[0].set_title('Real Distributions')
+axes[0].axes.yaxis.set_visible(False)
+
+axes[1].hist(syn_dataset_1, fc=(0, 0, 1, 0.5))
+axes[1].hist(syn_dataset_2, fc=(0.5, 0.5, 0.5, 0.5))
+axes[1].set_title('Synthetic Distributions')
+axes[1].axes.yaxis.set_visible(False)
 
 # Power calculation
-def power_calculations(dataset_1, dataset_2, alpha=0.05, k=10):
-    n_1 = len(dataset_1)
-    n_2 = len(dataset_2)
-
+def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=1000):
     # Use boostrap technique to estimate the distribution of the
     #  p-value statistic
     two_sample_t_test_p_value_dist = []
     mmd_test_stat_dist = []
     for br in range(k):
-        dist_1_replicate = np.random.choice(dataset_1, size=n_1, replace=True)
-        dist_2_replicate = np.random.choice(dataset_2, size=n_2, replace=True)
+        dist_1_replicate = np.random.choice(d1, size=n_1, replace=True)
+        dist_2_replicate = np.random.choice(d2, size=n_2, replace=True)
 
         # Classical two sample t test
         two_sample_t_test = ttest_ind(dist_1_replicate, dist_2_replicate, equal_var=True)
@@ -52,8 +68,32 @@ def power_calculations(dataset_1, dataset_2, alpha=0.05, k=10):
 
     return two_sample_t_test_power, mmd_test_power
 
-# Perform power calculations
-t_test_power, mmd_test_power = power_calculations(dataset_1, dataset_2)
-print("========== TEST POWER ==========")
-print("TWO SAMPLE T TEST:     {0}".format(t_test_power))
-print("MMD TEST:              {0}".format(mmd_test_power))
+# Compute power for various n
+n = np.linspace(1, 200, num=50)
+
+t_test_power_for_n = []
+mmd_test_power_for_n = []
+syn_t_test_power_for_n = []
+syn_mmd_test_power_for_n = []
+for n_i in n:
+    t_real, mmd_real = power_calculations(dataset_1, dataset_2, int(n_i), int(n_i))
+    t_syn, mmd_syn = power_calculations(syn_dataset_1, syn_dataset_2, int(n_i), int(n_i))
+
+    t_test_power_for_n.append(t_real)
+    mmd_test_power_for_n.append(mmd_real)
+    syn_t_test_power_for_n.append(t_syn)
+    syn_mmd_test_power_for_n.append(mmd_syn)
+
+# Plot curve of n vs power
+axes[2].plot(n, t_test_power_for_n, label='T Test Real')
+axes[2].plot(n, syn_t_test_power_for_n, label='T Test Syn')
+axes[2].plot(n, mmd_test_power_for_n, label='MMD Test Real')
+axes[2].plot(n, syn_mmd_test_power_for_n, label='MMD Test Syn')
+axes[2].set_title('Sample Size vs Power')
+axes[2].set_xlabel('Sample Size')
+axes[2].set_ylabel('Power')
+axes[2].legend(loc="upper right")
+
+# Save results
+figure.tight_layout()
+figure.savefig('{0}sample_size_vs_power.png'.format(args.output_dir))
