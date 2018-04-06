@@ -36,8 +36,14 @@ The goal of this project is to show that recovering the underlying data distribu
 ##### [NULL] ChiSquare(9) vs ChiSquare(9) w/ 100k True Samples
 ![ChiSquare(9) vs ChiSquare(9)](examples/sample_size_vs_power/chi_9_vs_chi_9.png)
 
+##### [NULL] ChiSquare(9) vs ChiSquare(9) w/ 100 True Samples
+![ChiSquare(9) vs ChiSquare(9)](examples/sample_size_vs_power/100_chi_9_vs_chi_9.png)
+
 ##### [ALTERNATIVE] ChiSquare(9) vs Exp(9) w/ 100k True Samples
 ![ChiSquare(9) vs Exp(9)](examples/sample_size_vs_power/chi_9_vs_exp_9.png)
+
+##### [ALTERNATIVE] ChiSquare(9) vs Exp(9) w/ 100 True Samples
+![ChiSquare(9) vs Exp(9)](examples/sample_size_vs_power/100_chi_9_vs_exp_9.png)
 
 ##### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100k True Samples
 ![GaussianMix vs Exp(9)](examples/sample_size_vs_power/gaussian_mix_vs_exp_9.png)

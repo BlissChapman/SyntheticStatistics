@@ -86,7 +86,7 @@ def batch_generator(data, sample_length, batch_size, cuda):
 
             yield data_batch
 
-real_data = gaussian(DATASET_LENGTH)
+real_data = exponential(DATASET_LENGTH)
 real_data_generator = batch_generator(real_data, SAMPLE_LENGTH, BATCH_SIZE, CUDA)
 
 # ========== Models ==========
