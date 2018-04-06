@@ -20,11 +20,11 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # Load datasets
-# dataset_1 = np.random.normal(0, 1, 1000)
-# dataset_2 = np.random.normal(0, 1, 1000)
+dataset_1 = np.random.normal(0, 1, 1000)
+dataset_2 = np.random.normal(1, 1, 1000)
 
-dataset_1 = gaussian_mixture(1000)
-dataset_2 = exponential(1000)
+# dataset_1 = gaussian(1000)
+# dataset_2 = gaussian(1000)
 
 # dataset_2 = np.random.exponential(9, size=1000)
 

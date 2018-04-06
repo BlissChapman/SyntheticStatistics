@@ -11,7 +11,7 @@ def uniform_noise(sample_length, batch_size, cuda):
     return uniform_data
 
 def gaussian(dataset_length):
-    return np.random.normal(loc=1, scale=1.0, size=(dataset_length))
+    return np.random.normal(loc=0, scale=1.0, size=(dataset_length))
 
 def gaussian_mixture(dataset_length):
     samples = np.random.normal(-2.5, 1.0, int(dataset_length/3))

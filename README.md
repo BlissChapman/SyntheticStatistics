@@ -20,21 +20,26 @@ The goal of this project is to show that recovering the underlying data distribu
 
 ## Results
 ### Gaussians
-##### [NULL] Gaussian(0, 1) vs Gaussian(0, 1)
+##### [NULL] Gaussian(0, 1) vs Gaussian(0, 1) w/ 100k True Samples
 ![Gaussian(0, 1) vs Gaussian(0, 1)](examples/sample_size_vs_power/gaussian_0_vs_gaussian_0.png)
 
-##### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(1, 1)
+##### [NULL] Gaussian(0, 1) vs Gaussian(0, 1) w/ 100 True Samples
+![Gaussian(0, 1) vs Gaussian(0, 1) w/ 100 Samples](examples/sample_size_vs_power/100_gaussian_0_vs_gaussian_0.png)
+
+##### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(1, 1) w/ 100k True Samples
 ![Gaussian(0, 1) vs Gaussian(1, 1)](examples/sample_size_vs_power/gaussian_0_vs_gaussian_1.png)
 
+##### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(1, 1) w/ 100 True Samples
+![Gaussian(0, 1) vs Gaussian(1, 1)](examples/sample_size_vs_power/100_gaussian_0_vs_gaussian_1.png)
 
 ### Non-Gaussian
-##### [NULL] ChiSquare(9) vs ChiSquare(9)
+##### [NULL] ChiSquare(9) vs ChiSquare(9) w/ 100k True Samples
 ![ChiSquare(9) vs ChiSquare(9)](examples/sample_size_vs_power/chi_9_vs_chi_9.png)
 
-##### [ALTERNATIVE] ChiSquare(9) vs Exp(9)
+##### [ALTERNATIVE] ChiSquare(9) vs Exp(9) w/ 100k True Samples
 ![ChiSquare(9) vs Exp(9)](examples/sample_size_vs_power/chi_9_vs_exp_9.png)
 
-##### [ALTERNATIVE] GaussianMix vs Exp(9)
+##### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100k True Samples
 ![GaussianMix vs Exp(9)](examples/sample_size_vs_power/gaussian_mix_vs_exp_9.png)
 
 ## Neuroscientific Application

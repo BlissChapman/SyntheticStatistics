@@ -7,7 +7,7 @@ import shutil
 import torch
 
 from torch.autograd import Variable
-from utils.noise import uniform_noise
+from utils.sampling import uniform_noise
 
 parser = argparse.ArgumentParser(description="Generate specified number of samples from trained generator and write to specified output directory.")
 parser.add_argument('generator_state_dict_path', help='path to a file containing the generative model state dict')
@@ -29,9 +29,9 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # ========== Hyperparameters ==========
-BATCH_SIZE = 32
+BATCH_SIZE = 16
 MODEL_DIMENSIONALITY = 64
-SAMPLE_LENGTH = 64
+SAMPLE_LENGTH = 1
 NOISE_SAMPLE_LENGTH = 64
 
 description_f = open(args.output_dir + 'description.txt', 'w')

@@ -31,10 +31,10 @@ os.makedirs(MODEL_OUTPUT_DIR)
 
 # ========== Hyperparameters ==========
 TRAINING_STEPS = 150000
-DATASET_LENGTH = 100000
-BATCH_SIZE = 32
+DATASET_LENGTH = 10**2
+BATCH_SIZE = 16
 MODEL_DIMENSIONALITY = 64
-SAMPLE_LENGTH = 64
+SAMPLE_LENGTH = 1
 NOISE_SAMPLE_LENGTH = 64
 CRITIC_UPDATES_PER_GENERATOR_UPDATE = 1
 LAMBDA = 10
@@ -86,7 +86,7 @@ def batch_generator(data, sample_length, batch_size, cuda):
 
             yield data_batch
 
-real_data = gaussian_mixture(DATASET_LENGTH)
+real_data = gaussian(DATASET_LENGTH)
 real_data_generator = batch_generator(real_data, SAMPLE_LENGTH, BATCH_SIZE, CUDA)
 
 # ========== Models ==========
@@ -117,7 +117,6 @@ for training_step in range(0, TRAINING_STEPS):
         critic_loss = critic.train(real_data_batch, synthetic_data_batch, LAMBDA)
         running_critic_loss += critic_loss.data[0]
 
-    # Train generator
     generator_noise_sample = Variable(uniform_noise(NOISE_SAMPLE_LENGTH, BATCH_SIZE, CUDA))
     synthetic_data_batch = generator(generator_noise_sample)
     critic_output = critic(synthetic_data_batch)
