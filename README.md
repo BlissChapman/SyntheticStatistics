@@ -11,12 +11,17 @@ Test whether two distributions P and Q are different based on samples drawn from
 
 But why assume the data is Gaussian?
 
-### Proposed Non-Parametric Approach
+### Non-Parametric Approach
+1) Sample from distribution P.
+2) Sample from distribution Q.
+3) Run a non-parametric test like a [Kernel Two-Sample Test](http://www.gatsby.ucl.ac.uk/~gretton/mmd/mmd.htm).
+
+### Proposed Approach
 1) Given samples from P, use a generative model to recover an estimate P^ of the underlying probability distribution of P.
 2) Given samples from Q, use a generative model to recover an estimate Q^ of the underlying probability distribution of Q.
-3) Using unlimited synthetic data from the learned distributions P^ and Q^, run a non-parametric test like a [Kernel Two-Sample Test](http://www.gatsby.ucl.ac.uk/~gretton/mmd/mmd.htm) to test for a difference between P^ and Q^.
+3) Using unlimited synthetic data from the learned distributions P^ and Q^, run a (parametric or non-parametric) test to distinguish between the two.
 
-The goal of this project is to show that recovering the underlying data distribution can enable powerful non-parametric tests that take advantage of unlimited synthetic data.
+The goal of this project is to show that sampling synthetic data from the underlying data distribution can enable powerful tests with fewer assumptions about the underlying data distribution.
 
 ## Results
 ### Gaussians
@@ -47,6 +52,9 @@ The goal of this project is to show that recovering the underlying data distribu
 
 ##### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100k True Samples
 ![GaussianMix vs Exp(9)](examples/sample_size_vs_power/gaussian_mix_vs_exp_9.png)
+
+##### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100 True Samples
+![GaussianMix vs Exp(9)](examples/sample_size_vs_power/100_gaussian_mix_vs_exp_9.png)
 
 ## Neuroscientific Application
 > Mounting evidence over the last few years suggest that published neuroscience research suffer from low power, and especially
