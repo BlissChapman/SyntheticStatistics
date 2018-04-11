@@ -69,5 +69,8 @@ The goal of this project is to show that sampling synthetic data from the underl
 
 Source: [Power and sample size calculations for fMRI studies based on the prevalence of active peaks](https://www.biorxiv.org/content/biorxiv/early/2016/04/20/049429.full.pdf)
 
+##### [NULL] Visual vs Visual w/in Brainpedia
+![Visual vs Visual](examples/sample_size_vs_power/fmri_fdr_visual_vs_visual.png)
+
 ##### [ALTERNATIVE] Visual vs Non-Visual w/in Brainpedia
 ![Visual vs Non-Visual](examples/sample_size_vs_power/fmri_fdr_visual_vs_non_visual.png)
