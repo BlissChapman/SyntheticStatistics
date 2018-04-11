@@ -77,13 +77,15 @@ real_visual_brain_img = invert_preprocessor_scaling(real_dataset_visual[0].squee
 syn_non_visual_brain_img = invert_preprocessor_scaling(syn_dataset_non_visual[2].squeeze(), syn_dataset_brainpedia.preprocessor)
 syn_visual_brain_img = invert_preprocessor_scaling(syn_dataset_visual[0].squeeze(), syn_dataset_brainpedia.preprocessor)
 
-figure, axes = plt.subplots(nrows=5, ncols=1, figsize=(20,15))
+figure, axes = plt.subplots(nrows=5, ncols=1, figsize=(20, 15))
 plotting.plot_glass_brain(real_non_visual_brain_img, threshold='auto', title="[REAL NON-VISUAL]", axes=axes[0])
 plotting.plot_glass_brain(syn_non_visual_brain_img, threshold='auto', title="[SYN NON-VISUAL]", axes=axes[1])
 plotting.plot_glass_brain(real_visual_brain_img, threshold='auto', title="[REAL VISUAL]", axes=axes[2])
 plotting.plot_glass_brain(syn_visual_brain_img, threshold='auto', title="[SYN VISUAL]", axes=axes[3])
 
 # Power calculation
+
+
 def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
     fdr_rejections = []
     for br in range(k):
@@ -105,7 +107,7 @@ def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
 
         # FDR Correction
         fdr_rejections_by_voxel = fdr_correction(two_sample_t_test_p_vals_by_voxel, alpha=alpha)[0]
-        fdr_reject = sum(fdr_rejections_by_voxel) > 0 # reject if any voxel rejects
+        fdr_reject = sum(fdr_rejections_by_voxel) > 0  # reject if any voxel rejects
         fdr_rejections.append(fdr_reject)
 
     fdr_power = np.mean(fdr_rejections)

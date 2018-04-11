@@ -7,6 +7,7 @@
 
 import numpy as np
 
+
 def _ecdf(x):
     """No frills empirical cdf used in fdrcorrection."""
     nobs = len(x)
