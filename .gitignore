@@ -1,6 +1,7 @@
 OUTPUT/*
 MODEL_OUTPUT/*
 SYN_DATASETS/*
+REAL_DATASETS/*
 data/*
 
 # Byte-compiled / optimized / DLL files
