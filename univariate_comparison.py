@@ -5,16 +5,16 @@ import os
 import shutil
 
 from scipy.stats import ttest_ind
-from mmd import mmd
+from utils.mmd import mmd
 from utils.sampling import *
 
+
 # Parse arguments
-parser = argparse.ArgumentParser(description="Compare classical two sample t test to non-parametric methods.")
+parser = argparse.ArgumentParser(description="Compare classical two sample t test to non-parametric tests for real and synthetic univariate distributions.")
 parser.add_argument('real_dataset_1', help='the first dataset to use in testing')
 parser.add_argument('real_dataset_2', help='the second dataset to use in testing')
 parser.add_argument('syn_dataset_1', help='the first synthetic dataset to use in testing')
 parser.add_argument('syn_dataset_2', help='the second synthetic dataset to use in testing')
-parser.add_argument('--brain_data', help='boolean flag indicating the datasets contain fMRI data', action="store_true")
 parser.add_argument('output_dir', help='the directory to save training results')
 args = parser.parse_args()
 
@@ -23,21 +23,10 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # Load datasets
-if args.brain_data:
-    print("BRAIN DATA")
-    # brainpedia = Brainpedia(data_dirs=[args.train_data_dir],
-    #                         cache_dir=args.train_data_dir_cache,
-    #                         scale=DOWNSAMPLE_SCALE,
-    #                         multi_tag_label_encoding=MULTI_TAG_LABEL_ENCODING)
-    # all_brain_data, all_brain_data_tags = brainpedia.all_data()
-    # dataset_1 = np.random.normal(0, 1, 1000)
-    # dataset_2 = np.random.normal(1, 1, 1000)
-    xxx
-else:
-    real_dataset_1 = np.load(args.real_dataset_1)
-    real_dataset_2 = np.load(args.real_dataset_2)
-    syn_dataset_1 = np.load(args.syn_dataset_1)
-    syn_dataset_2 = np.load(args.syn_dataset_2)
+real_dataset_1 = np.load(args.real_dataset_1)
+real_dataset_2 = np.load(args.real_dataset_2)
+syn_dataset_1 = np.load(args.syn_dataset_1)
+syn_dataset_2 = np.load(args.syn_dataset_2)
 
 np.random.shuffle(real_dataset_1)
 np.random.shuffle(real_dataset_2)
@@ -101,7 +90,6 @@ for i in range(len(n)):
     syn_mmd_test_power_for_n.append(mmd_syn)
 
     print("PERCENT COMPLETE: {0:.2f}%\r".format(100*float(i)/float(len(n))), end='')
-
 
 # Plot curve of n vs power
 axes[2].plot(n, t_test_power_for_n, label='T Test Real')
