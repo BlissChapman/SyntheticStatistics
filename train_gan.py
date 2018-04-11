@@ -63,6 +63,8 @@ if CUDA:
     torch.cuda.manual_seed(1)
 
 # ========== Data ==========
+
+
 def batch_generator(data, sample_length, batch_size, cuda):
     epoch_length = len(data)
 
@@ -70,9 +72,9 @@ def batch_generator(data, sample_length, batch_size, cuda):
         # Shuffle data between epochs:
         np.random.shuffle(real_data)
 
-        for i in range(0, epoch_length, sample_length*batch_size):
+        for i in range(0, epoch_length, sample_length * batch_size):
             # Retrieve data batch
-            data_batch_len = sample_length*batch_size
+            data_batch_len = sample_length * batch_size
             data_batch = np.array(data[i:i + data_batch_len])
             if len(data_batch) != data_batch_len:
                 continue
@@ -86,7 +88,8 @@ def batch_generator(data, sample_length, batch_size, cuda):
 
             yield data_batch
 
-real_data = exponential(DATASET_LENGTH)
+
+real_data = gaussian_mixture(DATASET_LENGTH)
 real_data_generator = batch_generator(real_data, SAMPLE_LENGTH, BATCH_SIZE, CUDA)
 
 # ========== Models ==========

@@ -1,5 +1,7 @@
 OUTPUT/*
 brainpedia/data/*
+brainpedia/syn_data/*
+brainpedia/cache/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

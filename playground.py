@@ -25,7 +25,7 @@ for i in range(len(alt_thetas)):
     # dist_2 = np.random.exponential(scale=alt_thetas[i], size=n_2)
 
     # Plot samples
-    dist_ax = plt.subplot(len(alt_thetas)+1, 1, i+1)
+    dist_ax = plt.subplot(len(alt_thetas) + 1, 1, i + 1)
     dist_ax.hist(dist_1, fc=(0, 0, 1, 0.5))
     dist_ax.hist(dist_2, fc=(0.5, 0.5, 0.5, 0.5))
 
@@ -57,14 +57,14 @@ for i in range(len(alt_thetas)):
     mmd_test_power_for_alt_theta.append(mmd_test_power)
 
     # Print % complete
-    print("PERCENT COMPLETE: {0:.2f}%\r".format((i+1)*100/len(alt_thetas)), end='')
+    print("PERCENT COMPLETE: {0:.2f}%\r".format((i + 1) * 100 / len(alt_thetas)), end='')
 
 # Plot power of classical two sample t test as a function of alternative mean
-power_ax = plt.subplot(len(alt_thetas)+1, 1, len(alt_thetas)+1)
+power_ax = plt.subplot(len(alt_thetas) + 1, 1, len(alt_thetas) + 1)
 power_ax.plot(alt_thetas, two_sample_t_test_power_for_alt_theta)
 power_ax.plot(alt_thetas, mmd_test_power_for_alt_theta)
 power_ax.set_xlabel('Alternative Means')
 power_ax.set_ylabel('Power of Tests')
 power_ax.set_ylim([-0.1, 1.1])
-power_ax.legend("TM",loc="upper right")
+power_ax.legend("TM", loc="upper right")
 figure.savefig('OUTPUT/test.png')

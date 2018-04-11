@@ -11,11 +11,11 @@ from utils.sampling import *
 
 # Parse arguments
 parser = argparse.ArgumentParser(description="Compare classical two sample t test to non-parametric tests for real and synthetic univariate distributions.")
-parser.add_argument('real_dataset_1', help='the first dataset to use in testing')
-parser.add_argument('real_dataset_2', help='the second dataset to use in testing')
-parser.add_argument('syn_dataset_1', help='the first synthetic dataset to use in testing')
-parser.add_argument('syn_dataset_2', help='the second synthetic dataset to use in testing')
-parser.add_argument('output_dir', help='the directory to save training results')
+parser.add_argument('real_dataset_1', help='the path to the first real dataset')
+parser.add_argument('syn_dataset_1', help='the path to the synthetic dataset generated from a model trained on real_dataset_1')
+parser.add_argument('real_dataset_2', help='the path to the second real dataset')
+parser.add_argument('syn_dataset_2', help='the path to the synthetic dataset generated from a model trained on real_dataset_2')
+parser.add_argument('output_dir', help='the directory to save comparison results')
 args = parser.parse_args()
 
 # Setup output directory
@@ -46,6 +46,8 @@ axes[1].set_title('Synthetic Distributions')
 axes[1].axes.yaxis.set_visible(False)
 
 # Power calculation
+
+
 def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**3):
     # Use boostrap technique to estimate the distribution of the
     #  p-value statistic
@@ -73,6 +75,7 @@ def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**3):
 
     return two_sample_t_test_power, mmd_test_power
 
+
 # Compute power for various n
 n = np.linspace(2, 200, num=50)
 
@@ -89,7 +92,7 @@ for i in range(len(n)):
     syn_t_test_power_for_n.append(t_syn)
     syn_mmd_test_power_for_n.append(mmd_syn)
 
-    print("PERCENT COMPLETE: {0:.2f}%\r".format(100*float(i)/float(len(n))), end='')
+    print("PERCENT COMPLETE: {0:.2f}%\r".format(100 * float(i) / float(len(n))), end='')
 
 # Plot curve of n vs power
 axes[2].plot(n, t_test_power_for_n, label='T Test Real')
