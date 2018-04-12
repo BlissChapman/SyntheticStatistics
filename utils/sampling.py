@@ -2,18 +2,27 @@ import numpy as np
 import torch
 
 
-def uniform_noise(sample_length, batch_size, cuda):
-    uniform_data = np.random.uniform(low=0.0, high=1.0, size=(batch_size, sample_length))
-    uniform_data = torch.Tensor(uniform_data)
+def sample(dataset_length, distribution):
+    if distribution == 'gaussian_0':
+        return gaussian_0(dataset_length)
+    elif distribution == 'gaussian_1':
+        return gaussian_1(dataset_length)
+    elif distribution == 'chi_square_9':
+        return chi_square_9(dataset_length)
+    elif distribution == 'exp_9':
+        return exp_9(dataset_length)
+    elif distribution == 'gaussian_mixture':
+        return gaussian_mixture(dataset_length)
+    else:
+        raise ValueError('Attempted to sample from a distribution that is not supported.')
 
-    if cuda:
-        uniform_data = uniform_data.cuda()
 
-    return uniform_data
-
-
-def gaussian(dataset_length):
+def gaussian_0(dataset_length):
     return np.random.normal(loc=0, scale=1.0, size=(dataset_length))
+
+
+def gaussian_1(dataset_length):
+    return np.random.normal(loc=1.0, scale=1.0, size=(dataset_length))
 
 
 def gaussian_mixture(dataset_length):
@@ -23,13 +32,20 @@ def gaussian_mixture(dataset_length):
     return samples
 
 
-def exponential(dataset_length):
+def exp_9(dataset_length):
     return np.random.exponential(scale=9.0, size=(dataset_length))
 
 
-def chi_square(dataset_length):
+def chi_square_9(dataset_length):
     return np.random.chisquare(9, size=dataset_length)
 
 
-def single_value(dataset_length):
-    return 5 * np.ones((dataset_length))
+# ========== NOISE ==========
+def uniform_noise(sample_length, batch_size, cuda):
+    uniform_data = np.random.uniform(low=0.0, high=1.0, size=(batch_size, sample_length))
+    uniform_data = torch.Tensor(uniform_data)
+
+    if cuda:
+        uniform_data = uniform_data.cuda()
+
+    return uniform_data
