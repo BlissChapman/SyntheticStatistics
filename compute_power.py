@@ -65,5 +65,5 @@ def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**3):
 t_real = power_calculations(real_dataset_1, real_dataset_2, real_dataset_1.shape[0], real_dataset_2.shape[0])
 t_syn = power_calculations(syn_dataset_1, syn_dataset_2, syn_dataset_1.shape[0], syn_dataset_2.shape[0])
 
-with open(args.output_dir + 'power_results.txt', 'w') as results_f:
-    results_f.write("T_REAL:{0},T_SYN:{1}".format(t_real, t_syn))
+with open(args.output_dir + 'results.txt', 'w') as results_f:
+    results_f.write("{0},{1}".format(t_real, t_syn))
