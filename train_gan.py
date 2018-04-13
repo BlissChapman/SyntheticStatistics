@@ -22,8 +22,8 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # ========== Hyperparameters ==========
-TRAINING_STEPS = 150000
-BATCH_SIZE = 16
+TRAINING_STEPS = 100#100000
+BATCH_SIZE = 8
 MODEL_DIMENSIONALITY = 64
 SAMPLE_LENGTH = 1
 NOISE_SAMPLE_LENGTH = 64
@@ -45,9 +45,6 @@ description_f.close()
 
 # ========== HOUSEKEEPING ==========
 CUDA = torch.cuda.is_available()
-if CUDA:
-    print("Using GPU optimizations!")
-
 np.random.seed(1)
 torch.manual_seed(1)
 if CUDA:

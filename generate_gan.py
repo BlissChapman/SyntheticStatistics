@@ -57,4 +57,4 @@ for step in range(args.num_samples):
 
 # Write samples to disk
 synthetic_data = np.array(synthetic_data)
-np.save(args.output_dir + 'synthetic_data', synthetic_data)
+np.save(args.output_dir + 'data', synthetic_data)

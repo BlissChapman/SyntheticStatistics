@@ -46,8 +46,6 @@ axes[1].set_title('Synthetic Distributions')
 axes[1].axes.yaxis.set_visible(False)
 
 # Power calculation
-
-
 def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**3):
     # Use boostrap technique to estimate the distribution of the
     #  p-value statistic
