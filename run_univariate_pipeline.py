@@ -8,10 +8,10 @@ import shutil
 
 
 # ========== HYPERPARAMETERS ==========
-NUM_SAMPLES_AVAILABLE_TO_MODEL = np.linspace(10,250,num=20)
-NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 5
+NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10,250,num=1)
+NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 3
 NUM_SYN_SAMPLES_TO_GENERATE = 25000
-UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']
+UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_1']# 'chi_square_9', 'exp_9', 'gaussian_mixture']
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'
@@ -43,13 +43,12 @@ def train_and_generate_samples(num_samples_available_to_model):
     for k in range(NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE):
         for dist in UNIVARIATE_DISTRIBUTIONS:
             # Set up output directories
-            n = int(num_samples_available_to_model)
-            model_dir, syn_data_dir, real_data_dir = output_dirs(dist, n, k)
+            model_dir, syn_data_dir, real_data_dir = output_dirs(dist, num_samples_available_to_model, k)
 
             # Set up commands
-            train_cmd = 'python3 train_gan.py {0} {1} {2}'.format(dist, n, model_dir)
+            train_cmd = 'python3 train_gan.py {0} {1} {2}'.format(dist, num_samples_available_to_model, model_dir)
             generate_syn_cmd = 'python3 generate_gan.py {0} {1} {2}'.format(model_dir+'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_dir)
-            generate_real_cmd = 'python3 generate.py {0} {1} {2}'.format(dist, n, real_data_dir)
+            generate_real_cmd = 'python3 generate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_dir)
 
             # Run commands
             os.system(train_cmd)
@@ -58,26 +57,25 @@ def train_and_generate_samples(num_samples_available_to_model):
 
 def compute_power(num_samples_available_to_model):
     # Compute power for every combination of distributions generated at this sample size:
-    for i in range(len(univariate_distributions)):
-        for j in range(i, len(univariate_distributions)):
-            dist_1 = univariate_distributions[i]
-            dist_2 = univariate_distributions[j]
+    for i in range(len(UNIVARIATE_DISTRIBUTIONS)):
+        for j in range(i, len(UNIVARIATE_DISTRIBUTIONS)):
+            dist_1 = UNIVARIATE_DISTRIBUTIONS[i]
+            dist_2 = UNIVARIATE_DISTRIBUTIONS[j]
 
             t_real_power = []
             t_syn_power = []
 
             for k in range(NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE):
                 # Retrieve data directories
-                n = int(num_samples_available_to_model)
-                _, syn_data_1_dir, real_data_1_dir = output_dirs(dist_1, n, k)
-                _, syn_data_2_dir, real_data_2_dir = output_dirs(dist_2, n, k)
+                _, syn_data_1_dir, real_data_1_dir = output_dirs(dist_1, num_samples_available_to_model, k)
+                _, syn_data_2_dir, real_data_2_dir = output_dirs(dist_2, num_samples_available_to_model, k)
 
                 # Set up compute_power_cmd
                 real_dataset_1 = real_data_1_dir + 'data.npy'
                 syn_dataset_1 = syn_data_1_dir + 'data.npy'
                 real_dataset_2 = real_data_2_dir + 'data.npy'
                 syn_dataset_2 = syn_data_2_dir + 'data.npy'
-                power_dir = '{0}[{1}*{2}]_[n={3}]_[k={4}]/'.format(POWER_DIR, dist_1, dist_2, n, k)
+                power_dir = '{0}[{1}*{2}]_[n={3}]_[k={4}]/'.format(POWER_DIR, dist_1, dist_2, num_samples_available_to_model, k)
                 compute_power_cmd = 'python3 compute_power.py {0} {1} {2} {3} {4}'.format(real_dataset_1, syn_dataset_1, real_dataset_2, syn_dataset_2, power_dir)
 
                 # Run power computation
@@ -116,16 +114,19 @@ def clear_output_dirs():
     shutil.rmtree(REAL_DATA_OUTPUT_DIR)
     shutil.rmtree(POWER_DIR)
 
-for n in NUM_SAMPLES_AVAILABLE_TO_MODEL:
+for i in range(NUM_SAMPLES_AVAILABLE_TO_MODEL.shape[0]):
+    print('PERCENT COMPLETE: {0:.2f}%\r'.format(100 * i / NUM_SAMPLES_AVAILABLE_TO_MODEL.shape[0]), end='')
+
+    n = int(NUM_SAMPLES_AVAILABLE_TO_MODEL[i])
     train_and_generate_samples(n)
     compute_power(n)
     clear_output_dirs()
 
 # ========== VISUALIZATION ==========
-for i in range(len(univariate_distributions)):
-    for j in range(i, len(univariate_distributions)):
-        dist_1 = univariate_distributions[i]
-        dist_2 = univariate_distributions[j]
+for i in range(len(UNIVARIATE_DISTRIBUTIONS)):
+    for j in range(i, len(UNIVARIATE_DISTRIBUTIONS)):
+        dist_1 = UNIVARIATE_DISTRIBUTIONS[i]
+        dist_2 = UNIVARIATE_DISTRIBUTIONS[j]
 
         results_pth = '{0}[{1}*{2}]/'.format(RESULTS_DIR, dist_1, dist_2)
         real_results_pth = results_pth+'real.txt'
