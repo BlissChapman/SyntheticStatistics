@@ -8,10 +8,10 @@ import shutil
 
 
 # ========== HYPERPARAMETERS ==========
-NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10,250,num=1)
+NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10,250,num=20)
 NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 3
 NUM_SYN_SAMPLES_TO_GENERATE = 25000
-UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_1']# 'chi_square_9', 'exp_9', 'gaussian_mixture']
+UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'
