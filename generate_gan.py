@@ -17,9 +17,6 @@ args = parser.parse_args()
 
 # ========== HOUSEKEEPING ==========
 CUDA = torch.cuda.is_available()
-if CUDA:
-    print("Using GPU optimizations!")
-
 np.random.seed(1)
 torch.manual_seed(1)
 if CUDA:
@@ -58,10 +55,6 @@ for step in range(args.num_samples):
     synthetic_data_sample = list(synthetic_data_sample)
     synthetic_data += synthetic_data_sample
 
-    # Logging
-    print("PERCENT GENERATED: {0:.2f}%\r".format(100.0 * float(step) / float(args.num_samples)), end='')
-
 # Write samples to disk
 synthetic_data = np.array(synthetic_data)
 np.save(args.output_dir + 'synthetic_data', synthetic_data)
-print("Synthetic data saved to '{0}'".format(args.output_dir + 'synthetic_data'))
