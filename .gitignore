@@ -1,4 +1,5 @@
 OUTPUT/*
+RESULTS/*
 brainpedia/data/*
 brainpedia/syn_data/*
 brainpedia/cache/*
