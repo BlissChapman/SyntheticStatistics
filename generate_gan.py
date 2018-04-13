@@ -51,7 +51,7 @@ synthetic_data = []
 for step in range(args.num_samples):
     # Generate synthetic data
     noise_sample = Variable(uniform_noise(NOISE_SAMPLE_LENGTH, BATCH_SIZE, CUDA))
-    synthetic_data_sample = generator(noise_sample).data.numpy().flatten()
+    synthetic_data_sample = generator(noise_sample).data.cpu().numpy().flatten()
     synthetic_data_sample = list(synthetic_data_sample)
     synthetic_data += synthetic_data_sample
 
