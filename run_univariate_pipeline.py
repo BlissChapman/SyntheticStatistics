@@ -144,3 +144,4 @@ for i in range(len(UNIVARIATE_DISTRIBUTIONS)):
         plt.legend(loc="upper right")
         plt.tight_layout()
         plt.savefig('{0}real_sample_size_vs_power.png'.format(results_pth))
+        plt.close()
