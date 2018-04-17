@@ -59,14 +59,14 @@ def train_and_generate_samples(num_samples_available_to_model):
             model_1_dir, model_2_dir, syn_data_1_dir, syn_data_2_dir, real_data_1_dir, real_data_2_dir = output_dirs(dist, num_samples_available_to_model, k)
 
             # Set up commands
-            train_cmd_1 = 'python3 train_gan.py {0} {1} {2}'.format(dist, num_samples_available_to_model, model_1_dir)
-            train_cmd_2 = 'python3 train_gan.py {0} {1} {2}'.format(dist, num_samples_available_to_model, model_2_dir)
+            train_cmd_1 = 'python3 train_prob_gan.py {0} {1} {2}'.format(dist, num_samples_available_to_model, model_1_dir)
+            train_cmd_2 = 'python3 train_prob_gan.py {0} {1} {2}'.format(dist, num_samples_available_to_model, model_2_dir)
 
-            generate_syn_cmd_1 = 'python3 generate_gan.py {0} {1} {2}'.format(model_1_dir+'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_1_dir)
-            generate_syn_cmd_2 = 'python3 generate_gan.py {0} {1} {2}'.format(model_2_dir+'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_2_dir)
+            generate_syn_cmd_1 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_1_dir+'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_1_dir)
+            generate_syn_cmd_2 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_2_dir+'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_2_dir)
 
-            generate_real_cmd_1 = 'python3 generate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_1_dir)
-            generate_real_cmd_2 = 'python3 generate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_2_dir)
+            generate_real_cmd_1 = 'python3 generate_univariate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_1_dir)
+            generate_real_cmd_2 = 'python3 generate_univariate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_2_dir)
 
             # Run commands
             os.system(train_cmd_1)
@@ -95,7 +95,7 @@ def compute_power_between_distributions(num_samples_available_to_model, dist_1, 
         real_dataset_2 = real_data_2_dir + 'data.npy'
         syn_dataset_2 = syn_data_2_dir + 'data.npy'
         power_dir = '{0}[{1}*{2}]_[n={3}]_[k={4}]/'.format(POWER_DIR, dist_1, dist_2, num_samples_available_to_model, k)
-        compute_power_cmd = 'python3 compute_power.py {0} {1} {2} {3} {4}'.format(real_dataset_1, syn_dataset_1, real_dataset_2, syn_dataset_2, power_dir)
+        compute_power_cmd = 'python3 compute_univariate_power.py {0} {1} {2} {3} {4}'.format(real_dataset_1, syn_dataset_1, real_dataset_2, syn_dataset_2, power_dir)
 
         # Run power computation
         os.system(compute_power_cmd)
