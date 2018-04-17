@@ -22,8 +22,10 @@ def sample(dataset_length, distribution):
 def gaussian_0(dataset_length):
     return np.random.normal(loc=0, scale=1.0, size=(dataset_length))
 
+
 def gaussian_0_1(dataset_length):
     return np.random.normal(loc=0.1, scale=1.0, size=(dataset_length))
+
 
 def gaussian_1(dataset_length):
     return np.random.normal(loc=1.0, scale=1.0, size=(dataset_length))

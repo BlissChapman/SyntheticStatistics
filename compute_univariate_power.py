@@ -58,7 +58,7 @@ def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**3):
     two_sample_t_test_power = np.mean([p < alpha for p in two_sample_t_test_p_value_dist])
     # mmd_test_power = np.mean([mmd_stat > alpha for mmd_stat in mmd_test_stat_dist])
 
-    return two_sample_t_test_power#, mmd_test_power
+    return two_sample_t_test_power  # , mmd_test_power
 
 
 # Compute power for a test between the real and syn distributions respectively

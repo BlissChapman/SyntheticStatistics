@@ -12,10 +12,10 @@ import shutil
 # ***RESEARCHER BEWARE***
 # Total number of GANs =
 #   |NUM_SAMPLES_AVAILABLE_TO_MODEL| * NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE * |UNIVARIATE_DISTRIBUTIONS| * 2
-NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10,250,num=10)
+NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10, 250, num=10)
 NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 5
 NUM_SYN_SAMPLES_TO_GENERATE = 25000
-UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_0_1', 'chi_square_9', 'exp_9', 'gaussian_mixture'] #'gaussian_1'
+UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_0_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']  # 'gaussian_1'
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'
@@ -51,6 +51,7 @@ def output_dirs(dist, n, k):
 
     return model_1_dir, model_2_dir, syn_data_1_dir, syn_data_2_dir, real_data_1_dir, real_data_2_dir
 
+
 def train_and_generate_samples(num_samples_available_to_model):
     # Generate real and synthetic samples:
     for k in range(NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE):
@@ -62,8 +63,8 @@ def train_and_generate_samples(num_samples_available_to_model):
             train_cmd_1 = 'python3 train_prob_gan.py {0} {1} {2}'.format(dist, num_samples_available_to_model, model_1_dir)
             train_cmd_2 = 'python3 train_prob_gan.py {0} {1} {2}'.format(dist, num_samples_available_to_model, model_2_dir)
 
-            generate_syn_cmd_1 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_1_dir+'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_1_dir)
-            generate_syn_cmd_2 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_2_dir+'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_2_dir)
+            generate_syn_cmd_1 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_1_dir + 'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_1_dir)
+            generate_syn_cmd_2 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_2_dir + 'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_2_dir)
 
             generate_real_cmd_1 = 'python3 generate_univariate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_1_dir)
             generate_real_cmd_2 = 'python3 generate_univariate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_2_dir)
@@ -75,6 +76,7 @@ def train_and_generate_samples(num_samples_available_to_model):
             os.system(generate_syn_cmd_2)
             os.system(generate_real_cmd_1)
             os.system(generate_real_cmd_2)
+
 
 def compute_power_between_distributions(num_samples_available_to_model, dist_1, dist_2):
     t_real_power = []
@@ -101,14 +103,14 @@ def compute_power_between_distributions(num_samples_available_to_model, dist_1, 
         os.system(compute_power_cmd)
 
         # Collect results
-        results = open(power_dir+'results.txt').readlines()[0].split(',')
+        results = open(power_dir + 'results.txt').readlines()[0].split(',')
         t_real_power.append(float(results[0]))
         t_syn_power.append(float(results[1]))
 
     # Save power results:
     results_pth = '{0}[{1}*{2}]/'.format(RESULTS_DIR, dist_1, dist_2)
-    real_results_pth = results_pth+'real.npy'
-    syn_results_pth = results_pth+'syn.npy'
+    real_results_pth = results_pth + 'real.npy'
+    syn_results_pth = results_pth + 'syn.npy'
     if not os.path.exists(results_pth):
         os.makedirs(results_pth)
         t_real_power_for_sample_size_for_dist1_dist2 = []
@@ -123,6 +125,7 @@ def compute_power_between_distributions(num_samples_available_to_model, dist_1, 
     np.save(real_results_pth, np.array(t_real_power_for_sample_size_for_dist1_dist2))
     np.save(syn_results_pth, np.array(t_syn_power_for_sample_size_for_dist1_dist2))
 
+
 def compute_all_power_tests(num_samples_available_to_model):
     # For every combination of distributions, compute the power
     #  of a t test distinguishing between real and synthetic samples respectively
@@ -133,11 +136,13 @@ def compute_all_power_tests(num_samples_available_to_model):
             dist_2 = UNIVARIATE_DISTRIBUTIONS[j]
             compute_power_between_distributions(num_samples_available_to_model, dist_1, dist_2)
 
+
 def clear_output_dirs():
     shutil.rmtree(MODELS_OUTPUT_DIR)
     shutil.rmtree(SYN_DATA_OUTPUT_DIR)
     shutil.rmtree(REAL_DATA_OUTPUT_DIR)
     shutil.rmtree(POWER_DIR)
+
 
 # ========== MAIN ==========
 for i in range(NUM_SAMPLES_AVAILABLE_TO_MODEL.shape[0]):
@@ -153,8 +158,8 @@ for i in range(len(UNIVARIATE_DISTRIBUTIONS)):
         dist_2 = UNIVARIATE_DISTRIBUTIONS[j]
 
         results_pth = '{0}[{1}*{2}]/'.format(RESULTS_DIR, dist_1, dist_2)
-        real_results_pth = results_pth+'real.npy'
-        syn_results_pth = results_pth+'syn.npy'
+        real_results_pth = results_pth + 'real.npy'
+        syn_results_pth = results_pth + 'syn.npy'
 
         t_real_power_for_sample_size_for_dist1_dist2 = np.load(real_results_pth).T
         t_syn_power_for_sample_size_for_dist1_dist2 = np.load(syn_results_pth).T
