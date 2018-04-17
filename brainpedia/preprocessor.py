@@ -3,7 +3,7 @@ import numpy as np
 import os
 import pickle
 
-from brainpedia.fmri_processing import resample_brain_img, normalize_brain_img_data
+from fmri_processing import resample_brain_img, normalize_brain_img_data
 from nilearn.image import load_img, resample_img
 from nilearn.input_data import NiftiMasker
 import nilearn.masking as masking
@@ -173,7 +173,7 @@ class Preprocessor:
         pickle.dump(self.brain_data_tag_encoding_map, brain_data_tags_encoding_f)
         pickle.dump(self.brain_data_tag_decoding_map, brain_data_tags_decoding_f)
 
-    def labels_for_brain_image(self, brain_image_path):
+    def labels_for_brain_image(brain_image_path):
         metadata_file_path = brain_image_path.split('.')[0] + '_metadata.json'
         metadata_json = json.load(open(metadata_file_path, 'r'))
         tags = metadata_json['tags'][:-1]
