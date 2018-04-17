@@ -5,6 +5,8 @@ import torch
 def sample(dataset_length, distribution):
     if distribution == 'gaussian_0':
         return gaussian_0(dataset_length)
+    elif distribution == 'gaussian_0_1':
+        return gaussian_0_1(dataset_length)
     elif distribution == 'gaussian_1':
         return gaussian_1(dataset_length)
     elif distribution == 'chi_square_9':
@@ -20,6 +22,8 @@ def sample(dataset_length, distribution):
 def gaussian_0(dataset_length):
     return np.random.normal(loc=0, scale=1.0, size=(dataset_length))
 
+def gaussian_0_1(dataset_length):
+    return np.random.normal(loc=0.1, scale=1.0, size=(dataset_length))
 
 def gaussian_1(dataset_length):
     return np.random.normal(loc=1.0, scale=1.0, size=(dataset_length))

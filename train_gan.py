@@ -12,7 +12,7 @@ from torch.autograd import Variable
 
 
 parser = argparse.ArgumentParser(description="Train ProbabilityDistGAN")
-parser.add_argument('distribution', choices=['gaussian_0', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture'], help='the univariate probaility distribution from which training data should be sampled')
+parser.add_argument('distribution', choices=['gaussian_0', 'gaussian_0_1', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture'], help='the univariate probaility distribution from which training data should be sampled')
 parser.add_argument('num_training_samples', type=int, help='the number of samples to use when training the ProbabilityDistGAN')
 parser.add_argument('output_dir', help='the directory to save training results')
 args = parser.parse_args()
@@ -22,7 +22,7 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # ========== Hyperparameters ==========
-TRAINING_STEPS = 100000
+TRAINING_STEPS = 10000
 BATCH_SIZE = 8
 MODEL_DIMENSIONALITY = 64
 SAMPLE_LENGTH = 1

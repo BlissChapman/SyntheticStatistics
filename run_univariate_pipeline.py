@@ -4,14 +4,15 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import seaborn as sns
 import shutil
 
 
 # ========== HYPERPARAMETERS ==========
 NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10,250,num=20)
-NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 3
+NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 5
 NUM_SYN_SAMPLES_TO_GENERATE = 25000
-UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']
+UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_0_1', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'
@@ -86,27 +87,23 @@ def compute_power(num_samples_available_to_model):
                 t_real_power.append(float(results[0]))
                 t_syn_power.append(float(results[1]))
 
-            # Average power results across all models trained at this sample size:
-            t_real_power = np.mean(t_real_power)
-            t_syn_power = np.mean(t_syn_power)
-
             # Save power results:
             results_pth = '{0}[{1}*{2}]/'.format(RESULTS_DIR, dist_1, dist_2)
-            real_results_pth = results_pth+'real.txt'
-            syn_results_pth = results_pth+'syn.txt'
+            real_results_pth = results_pth+'real.npy'
+            syn_results_pth = results_pth+'syn.npy'
             if not os.path.exists(results_pth):
                 os.makedirs(results_pth)
-                t_real_power_for_sample_size_for_dist1_dist2 = np.array([])
-                t_syn_power_for_sample_size_for_dist1_dist2 = np.array([])
+                t_real_power_for_sample_size_for_dist1_dist2 = []
+                t_syn_power_for_sample_size_for_dist1_dist2 = []
             else:
-                t_real_power_for_sample_size_for_dist1_dist2 = np.loadtxt(real_results_pth)
-                t_syn_power_for_sample_size_for_dist1_dist2 = np.loadtxt(syn_results_pth)
+                t_real_power_for_sample_size_for_dist1_dist2 = np.load(real_results_pth).tolist()
+                t_syn_power_for_sample_size_for_dist1_dist2 = np.load(syn_results_pth).tolist()
 
-            t_real_power_for_sample_size_for_dist1_dist2 = np.append(t_real_power_for_sample_size_for_dist1_dist2, t_real_power)
-            t_syn_power_for_sample_size_for_dist1_dist2 = np.append(t_syn_power_for_sample_size_for_dist1_dist2, t_syn_power)
+            t_real_power_for_sample_size_for_dist1_dist2.append(t_real_power)
+            t_syn_power_for_sample_size_for_dist1_dist2.append(t_syn_power)
 
-            np.savetxt(real_results_pth, t_real_power_for_sample_size_for_dist1_dist2)
-            np.savetxt(syn_results_pth, t_syn_power_for_sample_size_for_dist1_dist2)
+            np.save(real_results_pth, np.array(t_real_power_for_sample_size_for_dist1_dist2))
+            np.save(syn_results_pth, np.array(t_syn_power_for_sample_size_for_dist1_dist2))
 
 def clear_output_dirs():
     shutil.rmtree(MODELS_OUTPUT_DIR)
@@ -115,8 +112,6 @@ def clear_output_dirs():
     shutil.rmtree(POWER_DIR)
 
 for i in range(NUM_SAMPLES_AVAILABLE_TO_MODEL.shape[0]):
-    print('PERCENT COMPLETE: {0:.2f}%\r'.format(100 * i / NUM_SAMPLES_AVAILABLE_TO_MODEL.shape[0]), end='')
-
     n = int(NUM_SAMPLES_AVAILABLE_TO_MODEL[i])
     train_and_generate_samples(n)
     compute_power(n)
@@ -129,19 +124,20 @@ for i in range(len(UNIVARIATE_DISTRIBUTIONS)):
         dist_2 = UNIVARIATE_DISTRIBUTIONS[j]
 
         results_pth = '{0}[{1}*{2}]/'.format(RESULTS_DIR, dist_1, dist_2)
-        real_results_pth = results_pth+'real.txt'
-        syn_results_pth = results_pth+'syn.txt'
+        real_results_pth = results_pth+'real.npy'
+        syn_results_pth = results_pth+'syn.npy'
 
-        t_real_power_for_sample_size_for_dist1_dist2 = np.loadtxt(real_results_pth)
-        t_syn_power_for_sample_size_for_dist1_dist2 = np.loadtxt(syn_results_pth)
+        t_real_power_for_sample_size_for_dist1_dist2 = np.load(real_results_pth).T
+        t_syn_power_for_sample_size_for_dist1_dist2 = np.load(syn_results_pth).T
 
-        plt.plot(NUM_SAMPLES_AVAILABLE_TO_MODEL, t_real_power_for_sample_size_for_dist1_dist2, label='T Test Real')
-        plt.plot(NUM_SAMPLES_AVAILABLE_TO_MODEL, t_syn_power_for_sample_size_for_dist1_dist2, label='T Test Syn')
+        plt.figure()
+        sns.tsplot(data=t_real_power_for_sample_size_for_dist1_dist2, time=NUM_SAMPLES_AVAILABLE_TO_MODEL, color='blue', condition='T Test Real')
+        sns.tsplot(data=t_syn_power_for_sample_size_for_dist1_dist2, time=NUM_SAMPLES_AVAILABLE_TO_MODEL, color='orange', condition='T Test Syn')
         plt.title('{0} vs {1}'.format(dist_1, dist_2))
         plt.xlabel('Real Samples')
         plt.ylabel('Power')
         plt.ylim([-0.1, 1.1])
         plt.legend(loc="upper right")
         plt.tight_layout()
-        plt.savefig('{0}real_sample_size_vs_power.png'.format(results_pth))
+        plt.savefig('{0}true_sample_size_vs_power.png'.format(results_pth))
         plt.close()
