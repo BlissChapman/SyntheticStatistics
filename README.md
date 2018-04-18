@@ -34,6 +34,15 @@ The goal of this project is to show that sampling synthetic data from the underl
 ###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(0.1, 1)
 ![](examples/true_sample_size_vs_power/gaussian_0_vs_gaussian_0_1.png)
 
+##### [NULL] [ZOOMED] Gaussian(0, 1) vs Gaussian(0, 1)
+![](examples/true_sample_size_vs_power/zoomed_gaussian_0_vs_gaussian_0.png)
+
+##### [NULL] [ZOOMED] Gaussian(0.1, 1) vs Gaussian(0.1, 1)
+![](examples/true_sample_size_vs_power/zoomed_gaussian_0_1_vs_gaussian_0_1.png)
+
+##### [ALTERNATIVE] [ZOOMED] Gaussian(0, 1) vs Gaussian(0.1, 1)
+![](examples/true_sample_size_vs_power/zoomed_gaussian_0_vs_gaussian_0_1.png)
+
 ###### [ALTERNATIVE] Gaussian(0, 1) vs GaussianMix
 ![](examples/true_sample_size_vs_power/gaussian_0_vs_gaussian_mix.png)
 

@@ -24,8 +24,6 @@ args = parser.parse_args()
 
 # ========== HOUSEKEEPING ==========
 CUDA = torch.cuda.is_available()
-if CUDA:
-    print("Using GPU optimizations!")
 
 np.random.seed(1)
 torch.manual_seed(1)
