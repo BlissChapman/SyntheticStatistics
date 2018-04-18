@@ -1,13 +1,15 @@
 import json
+import nilearn
 import numpy as np
 import os
 import pickle
 
-from fmri_processing import resample_brain_img, normalize_brain_img_data
+from brainpedia.fmri_processing import resample_brain_img, normalize_brain_img_data
 from nilearn.image import load_img, resample_img
 from nilearn.input_data import NiftiMasker
 import nilearn.masking as masking
 
+nilearn.EXPAND_PATH_WILDCARDS = False
 
 class Preprocessor:
     """
@@ -90,8 +92,6 @@ class Preprocessor:
         # with a small dataset which allows for this inefficiency.
         # Refactoring will be necessary at larger scales.
 
-        print("========== PREPROCESSING ==========")
-
         # Set up structures to hold brain data, brain imgs, associated tags, and 1-hot mapping
         brain_imgs = []
         brain_data = []
@@ -106,12 +106,8 @@ class Preprocessor:
 
         # Loop over data files:
         total_num_files = len(collection_filenames)
-        num_processed = 0
 
         for filename in collection_filenames:
-            num_processed += 1
-            print("PERCENT COMPLETE: {0:.2f}%\r".format(100.0 * float(num_processed) / float(total_num_files)), end='')
-
             # Ignore files that are not images.
             if filename[-2:] != 'gz':
                 continue
@@ -121,7 +117,7 @@ class Preprocessor:
             brain_imgs.append(brain_img)
 
             # Load brain image metadata.
-            metadata_tags = self.labels_for_brain_image(filename)
+            metadata_tags = Preprocessor.labels_for_brain_image(filename)
             brain_data_tags.append(metadata_tags)
 
             # Downsample brain image.
@@ -150,22 +146,18 @@ class Preprocessor:
                     tag_encoding_count += 1
 
         # Compute dataset mask.
-        print("Computing dataset mask...\r", end='')
         brain_data_mask = masking.compute_background_mask(brain_imgs)
 
         # 1-hot encode all brain data tags.
-        print("1-hot encoding brain data tags...\r", end='')
         for i in range(len(brain_data_tags)):
             brain_data_tags[i] = self.encode_label(brain_data_tags[i])
 
         # Write preprocessed brain data out as binary files.
-        print("Writing preprocessed brain data out to files...\r", end='')
         brain_data_f = open(self.brain_data_path, 'wb')
         brain_data_mask_f = open(self.brain_data_mask_path, 'wb')
         brain_data_tags_f = open(self.brain_data_tags_path, 'wb')
         brain_data_tags_encoding_f = open(self.brain_data_tags_encoding_path, 'wb')
         brain_data_tags_decoding_f = open(self.brain_data_tags_decoding_path, 'wb')
-        print("                                                 \r", end='')
 
         pickle.dump(brain_data, brain_data_f)
         pickle.dump(brain_data_mask, brain_data_mask_f)
