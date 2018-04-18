@@ -66,8 +66,8 @@ def train_and_generate_samples(num_samples_available_to_model):
             generate_syn_cmd_1 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_1_dir + 'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_1_dir)
             generate_syn_cmd_2 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_2_dir + 'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_2_dir)
 
-            generate_real_cmd_1 = 'python3 generate_univariate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_1_dir)
-            generate_real_cmd_2 = 'python3 generate_univariate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_2_dir)
+            generate_real_cmd_1 = 'python3 sample_univariate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_1_dir)
+            generate_real_cmd_2 = 'python3 sample_univariate.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_2_dir)
 
             # Run commands
             os.system(train_cmd_1)

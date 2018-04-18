@@ -55,3 +55,9 @@ def uniform_noise(sample_length, batch_size, cuda):
         uniform_data = uniform_data.cuda()
 
     return uniform_data
+
+def noise(size, cuda=False):
+    noise = torch.from_numpy(np.random.normal(0.0, size=size)).float()
+    if cuda:
+        noise = noise.cuda()
+    return noise
