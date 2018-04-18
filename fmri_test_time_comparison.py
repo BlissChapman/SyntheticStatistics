@@ -6,10 +6,8 @@ import shutil
 
 from brainpedia.brainpedia import Brainpedia
 from brainpedia.fmri_processing import invert_preprocessor_scaling
+from utils.multiple_comparison import power_calculations
 from nilearn import plotting
-from scipy.stats import ttest_ind
-from utils.mmd import mmd
-from utils.multiple_comparison import fdr_correction
 from utils.sampling import *
 
 
@@ -82,37 +80,6 @@ plotting.plot_glass_brain(real_non_visual_brain_img, threshold='auto', title="[R
 plotting.plot_glass_brain(syn_non_visual_brain_img, threshold='auto', title="[SYN NON-VISUAL]", axes=axes[1])
 plotting.plot_glass_brain(real_visual_brain_img, threshold='auto', title="[REAL VISUAL]", axes=axes[2])
 plotting.plot_glass_brain(syn_visual_brain_img, threshold='auto', title="[SYN VISUAL]", axes=axes[3])
-
-# Power calculation
-
-
-def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
-    fdr_rejections = []
-    for br in range(k):
-        d1_idx = np.random.randint(low=0, high=d1.shape[0], size=n_1)
-        d2_idx = np.random.randint(low=0, high=d2.shape[0], size=n_2)
-
-        d1_replicate = d1[d1_idx].squeeze()
-        d2_replicate = d2[d2_idx].squeeze()
-
-        # Classical two sample t test by voxel
-        two_sample_t_test_p_vals_by_voxel = np.zeros(d1_replicate.shape[1:])
-
-        for i in range(two_sample_t_test_p_vals_by_voxel.shape[0]):
-            for j in range(two_sample_t_test_p_vals_by_voxel.shape[1]):
-                for k in range(two_sample_t_test_p_vals_by_voxel.shape[2]):
-                    d1_replicate_voxels = d1_replicate[:, i, j, k]
-                    d2_replicate_voxels = d2_replicate[:, i, j, k]
-                    two_sample_t_test_p_vals_by_voxel[i][j][k] = ttest_ind(d1_replicate_voxels, d2_replicate_voxels, equal_var=True).pvalue
-
-        # FDR Correction
-        fdr_rejections_by_voxel = fdr_correction(two_sample_t_test_p_vals_by_voxel, alpha=alpha)[0]
-        fdr_reject = sum(fdr_rejections_by_voxel) > 0  # reject if any voxel rejects
-        fdr_rejections.append(fdr_reject)
-
-    fdr_power = np.mean(fdr_rejections)
-    return fdr_power
-
 
 # Compute power for various n
 n = np.linspace(2, syn_dataset_length, num=50)
