@@ -70,6 +70,14 @@ The goal of this project is to show that sampling synthetic data from the underl
 ###### [NULL] GaussianMix vs GaussianMix
 ![](examples/true_sample_size_vs_power/gaussian_mix_vs_gaussian_mix.png)
 
+###### [NULL] Visual vs Visual
+![](examples/true_sample_size_vs_power/fmri_visual_vs_visual.png)
+
+###### [NULL] NON-Visual vs NON-Visual
+![](examples/true_sample_size_vs_power/fmri_non_visual_vs_non_visual.png)
+
+###### [ALTERNATIVE] Visual vs NON-Visual
+![](examples/true_sample_size_vs_power/fmri_visual_vs_non_visual.png)
 
 ### Number of Test Time Samples vs Power
 #### Gaussians
