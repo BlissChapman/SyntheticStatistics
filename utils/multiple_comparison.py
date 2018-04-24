@@ -2,9 +2,41 @@ import numpy as np
 
 from scipy.stats import ttest_ind
 
+def rejecting_voxels(d1, d2, alpha=0.05):
+    two_sample_t_test_p_vals_by_voxel = np.zeros(d1.shape[1:])
 
-def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
+    for i in range(two_sample_t_test_p_vals_by_voxel.shape[0]):
+        for j in range(two_sample_t_test_p_vals_by_voxel.shape[1]):
+            for k in range(two_sample_t_test_p_vals_by_voxel.shape[2]):
+                d1_voxels = d1[:, i, j, k]
+                d2_voxels = d2[:, i, j, k]
+                two_sample_t_test_p_vals_by_voxel[i][j][k] = ttest_ind(d1_voxels, d2_voxels, equal_var=True).pvalue
+
+    return fdr_correction(two_sample_t_test_p_vals_by_voxel, alpha=alpha)[0]
+
+def rejection_mask_overlap(rejections, mask_rejections):
+    num_overlap = 0
+    total_mask_reject = 0
+    total_either_reject = 0
+    for i in range(rejections.shape[0]):
+        for j in range(rejections.shape[1]):
+            for k in range(rejections.shape[2]):
+                rejection = rejections[i][j][k]
+                mask_reject = mask_rejections[i][j][k]
+
+                num_overlap += (rejection and mask_reject)
+                total_mask_reject += mask_reject
+                total_either_reject += (rejection or mask_reject)
+
+    overlap_mask_ratio = float(num_overlap) / float(max(1, total_mask_reject))
+    overlap_either_ratio = float(num_overlap) / float(max(1, total_either_reject))
+    return overlap_mask_ratio, overlap_either_ratio
+
+def power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1):
     fdr_rejections = []
+    overlap_mask_rejection_ratios = []
+    overlap_either_rejection_ratios = []
+
     for br in range(k):
         d1_idx = np.random.randint(low=0, high=d1.shape[0], size=n_1)
         d2_idx = np.random.randint(low=0, high=d2.shape[0], size=n_2)
@@ -12,23 +44,16 @@ def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
         d1_replicate = d1[d1_idx].squeeze()
         d2_replicate = d2[d2_idx].squeeze()
 
-        # Classical two sample t test by voxel
-        two_sample_t_test_p_vals_by_voxel = np.zeros(d1_replicate.shape[1:])
-
-        for i in range(two_sample_t_test_p_vals_by_voxel.shape[0]):
-            for j in range(two_sample_t_test_p_vals_by_voxel.shape[1]):
-                for k in range(two_sample_t_test_p_vals_by_voxel.shape[2]):
-                    d1_replicate_voxels = d1_replicate[:, i, j, k]
-                    d2_replicate_voxels = d2_replicate[:, i, j, k]
-                    two_sample_t_test_p_vals_by_voxel[i][j][k] = ttest_ind(d1_replicate_voxels, d2_replicate_voxels, equal_var=True).pvalue
-
-        # FDR Correction
-        fdr_rejections_by_voxel = fdr_correction(two_sample_t_test_p_vals_by_voxel, alpha=alpha)[0]
-        fdr_reject = sum(fdr_rejections_by_voxel) > 0  # reject if any voxel rejects
+        fdr_reject_by_voxel = rejecting_voxels(d1_replicate, d2_replicate, alpha)
+        fdr_reject = sum(fdr_reject_by_voxel) > 0  # reject if any voxel rejects
         fdr_rejections.append(fdr_reject)
 
+        overlap_mask_ratio, overlap_either_ratio = rejection_mask_overlap(fdr_reject_by_voxel, overlap_mask)
+        overlap_mask_rejection_ratios.append(overlap_mask_ratio)
+        overlap_either_rejection_ratios.append(overlap_either_ratio)
+
     fdr_power = np.mean(fdr_rejections)
-    return fdr_power
+    return fdr_power, overlap_mask_rejection_ratios, overlap_either_rejection_ratios
 
 
 
