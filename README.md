@@ -70,17 +70,17 @@ If we can train a generative model to synthesize realistic new data, doesn't tha
 ![Visual vs Non-Visual](examples/test_time_sample_size_vs_power/fmri_fdr_visual_vs_non_visual.png)
 
 ### Notes on Power Calculation
-#####Univariate Power
+##### Univariate Power
 1) Use bootstrap techniques to compute the distribution of the t test statistic.
 2) Compute p value for every test statistic.
 3) Power is approximately mean[1(p_i < alpha)]
 
 _Note: If the distribution is known to be Gaussian, we can directly compute the t test statistic without bootstrap techniques._
 
-#####Multivariate Power
+##### Multivariate Power
 _[Discussion to come]_
 
-#####fMRI Power
+##### fMRI Power
 _[Discussion to come]_
 
 
