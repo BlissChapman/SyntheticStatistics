@@ -22,13 +22,16 @@ Source: [University of Michigan Functional Magnetic Resonance Imaging Laboratory
 Synthetic functional magnetic resonance images generated with [state-of-the-art generative modeling techniques](https://github.com/BlissChapman/ICW-fMRI-GAN) could serve as a low-cost replacement for pilot data used in power analyses.
 
 **WANTED:** the smallest sample size needed for a study with 80% power
+
 **NOT WANTED:**
 1) Wasted time/money on futile experiments
 2) Wasted resources on extra subjects
 3) Underpowered studies
 
 ### Experiments
-We explore the proposal through univariate, multivariate, and neuroimaging experiments. In the figures below, if the synthetic and real curves are the same shape, then using synthetic data as a replacement for pilot data will yield a similar sample size requirement estimate as we would have achieved by using real data. Since we can synthesize cognitive process label combinations that do not exist in the original dataset, we can formulate power analyses with data that has never been collected before.
+We explore the potential of synthetic power analyses through univariate, multivariate, and neuroimaging experiments. In the figures below, if the synthetic and real power curves are the same shape, then using synthetic data in our power analyses will yield a similar sample size estimate as we would have achieved with real data.
+
+If we can train a generative model to synthesize realistic new data, doesn't that mean our training set contains more than enough data for a simple power analysis? Our fMRI generative modeling techniques can synthesize cognitive process label combinations that do not exist in the original dataset. Thus we can formulate power analyses with data that has never been collected before.
 
 ###### [NULL] Gaussian(0, 1) vs Gaussian(0, 1) w/ 100k True Samples
 ![](examples/test_time_sample_size_vs_power/gaussian_0_vs_gaussian_0.png)
@@ -66,18 +69,18 @@ We explore the proposal through univariate, multivariate, and neuroimaging exper
 ###### [ALTERNATIVE] Visual vs Non-Visual w/in Brainpedia
 ![Visual vs Non-Visual](examples/test_time_sample_size_vs_power/fmri_fdr_visual_vs_non_visual.png)
 
-##### Notes on Power Calculation
-**Univariate Power**
+### Notes on Power Calculation
+#####Univariate Power
 1) Use bootstrap techniques to compute the distribution of the t test statistic.
 2) Compute p value for every test statistic.
 3) Power is approximately mean[1(p_i < alpha)]
 
-_NOTE: If the distribution is known to be Gaussian, we can directly compute the t test statistic without bootstrap techniques._
+_Note: If the distribution is known to be Gaussian, we can directly compute the t test statistic without bootstrap techniques._
 
-**Multivariate Power**
+#####Multivariate Power
 _[Discussion to come]_
 
-**fMRI Power**
+#####fMRI Power
 _[Discussion to come]_
 
 
