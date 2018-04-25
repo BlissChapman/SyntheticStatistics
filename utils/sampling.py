@@ -15,10 +15,15 @@ def sample(dataset_length, distribution):
         return exp_9(dataset_length)
     elif distribution == 'gaussian_mixture':
         return gaussian_mixture(dataset_length)
+    elif distribution == 'm_gaussian_0_0':
+        return m_gaussian_0_0(dataset_length)
+    elif distribution == 'm_gaussian_1_1':
+        return m_gaussian_1_1(dataset_length)
     else:
         raise ValueError('Attempted to sample from a distribution that is not supported.')
 
 
+# ========== UNIVARIATE DISTRIBUTIONS ==========
 def gaussian_0(dataset_length):
     return np.random.normal(loc=0, scale=1.0, size=(dataset_length))
 
@@ -44,6 +49,14 @@ def exp_9(dataset_length):
 
 def chi_square_9(dataset_length):
     return np.random.chisquare(9, size=dataset_length)
+
+# ========== MULTIVARIATE DISTRIBUTIONS ==========
+def m_gaussian_0_0(dataset_length):
+    return np.random.multivariate_normal([0]*5, np.identity(5), size=(dataset_length))
+
+
+def m_gaussian_1_1(dataset_length):
+    return np.random.multivariate_normal([1]*5, np.identity(5), size=(dataset_length))
 
 
 # ========== NOISE ==========

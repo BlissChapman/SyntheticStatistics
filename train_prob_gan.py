@@ -12,7 +12,7 @@ from torch.autograd import Variable
 
 
 parser = argparse.ArgumentParser(description="Train ProbabilityDistGAN")
-parser.add_argument('distribution', choices=['gaussian_0', 'gaussian_0_1', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture'], help='the univariate probaility distribution from which training data should be sampled')
+parser.add_argument('distribution', choices=['gaussian_0', 'gaussian_0_1', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture', 'm_gaussian_0_0', 'm_gaussian_1_1'], help='the univariate probaility distribution from which training data should be sampled')
 parser.add_argument('num_training_samples', type=int, help='the number of samples to use when training the ProbabilityDistGAN')
 parser.add_argument('output_dir', help='the directory to save training results')
 args = parser.parse_args()
@@ -25,7 +25,7 @@ os.makedirs(args.output_dir)
 TRAINING_STEPS = 100
 BATCH_SIZE = 1
 MODEL_DIMENSIONALITY = 64
-SAMPLE_LENGTH = 1
+DATA_DIMENSIONALITY = 5
 NOISE_SAMPLE_LENGTH = 64
 CRITIC_UPDATES_PER_GENERATOR_UPDATE = 1
 LAMBDA = 10
@@ -36,7 +36,7 @@ description_f.write('DATE: {0}\n\n'.format(datetime.datetime.now().strftime('%b-
 description_f.write('TRAINING_STEPS: {0}\n'.format(TRAINING_STEPS))
 description_f.write('BATCH_SIZE: {0}\n'.format(BATCH_SIZE))
 description_f.write('MODEL_DIMENSIONALITY: {0}\n'.format(MODEL_DIMENSIONALITY))
-description_f.write('SAMPLE_LENGTH: {0}\n'.format(SAMPLE_LENGTH))
+description_f.write('DATA_DIMENSIONALITY: {0}\n'.format(DATA_DIMENSIONALITY))
 description_f.write('NOISE_SAMPLE_LENGTH: {0}\n'.format(NOISE_SAMPLE_LENGTH))
 description_f.write('CRITIC_UPDATES_PER_GENERATOR_UPDATE: {0}\n'.format(CRITIC_UPDATES_PER_GENERATOR_UPDATE))
 description_f.write('LAMBDA: {0}\n'.format(LAMBDA))
@@ -51,20 +51,19 @@ if CUDA:
     torch.cuda.manual_seed(1)
 
 # ========== Data ==========
-def batch_generator(data, sample_length, batch_size, cuda):
+def batch_generator(data, output_width, batch_size, cuda):
     epoch_length = len(data)
 
     while True:
         # Shuffle data between epochs:
         np.random.shuffle(real_data)
 
-        for i in range(0, epoch_length, sample_length * batch_size):
+        for i in range(0, epoch_length, batch_size):
             # Retrieve data batch
-            data_batch_len = sample_length * batch_size
-            data_batch = np.array(data[i:i + data_batch_len])
-            if len(data_batch) != data_batch_len:
+            data_batch = np.array(data[i:i + batch_size])
+            if len(data_batch) != batch_size:
                 continue
-            data_batch = data_batch.reshape((batch_size, sample_length))
+            data_batch = data_batch.reshape((batch_size, output_width))
 
             # Create torch tensors
             data_batch = torch.Tensor(data_batch)
@@ -76,14 +75,14 @@ def batch_generator(data, sample_length, batch_size, cuda):
 
 
 real_data = sample(args.num_training_samples, distribution=args.distribution)
-real_data_generator = batch_generator(real_data, SAMPLE_LENGTH, BATCH_SIZE, CUDA)
+real_data_generator = batch_generator(real_data, DATA_DIMENSIONALITY, BATCH_SIZE, CUDA)
 
 # ========== Models ==========
 generator = models.ProbabilityDistGAN.Generator(input_width=NOISE_SAMPLE_LENGTH,
-                                                output_width=SAMPLE_LENGTH,
+                                                output_width=DATA_DIMENSIONALITY,
                                                 dimensionality=MODEL_DIMENSIONALITY,
                                                 cudaEnabled=CUDA)
-critic = models.ProbabilityDistGAN.Critic(input_width=SAMPLE_LENGTH,
+critic = models.ProbabilityDistGAN.Critic(input_width=DATA_DIMENSIONALITY,
                                           dimensionality=MODEL_DIMENSIONALITY,
                                           cudaEnabled=CUDA)
 

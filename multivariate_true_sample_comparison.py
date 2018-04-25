@@ -7,22 +7,22 @@ import os
 import seaborn as sns
 import shutil
 
+from utils.multiple_comparison import multivariate_power_calculation
 
 # ========== HYPERPARAMETERS ==========
 # ***RESEARCHER BEWARE***
 # Total number of GANs =
-#   |NUM_SAMPLES_AVAILABLE_TO_MODEL| * NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE * |UNIVARIATE_DISTRIBUTIONS| * 2
-NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10, 250, num=10)
-NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 5
+#   |NUM_SAMPLES_AVAILABLE_TO_MODEL| * NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE * |MULTIVARIATE_DISTRIBUTIONS| * 2
+NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10, 250, num=2)
+NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 3
 NUM_SYN_SAMPLES_TO_GENERATE = 25000
-UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_0_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']  # 'gaussian_1'
+MULTIVARIATE_DISTRIBUTIONS = ['m_gaussian_0_0', 'm_gaussian_1_1']  # 'gaussian_1'
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'
 MODELS_OUTPUT_DIR = OUTPUT_DIR + 'MODELS/'
 SYN_DATA_OUTPUT_DIR = OUTPUT_DIR + 'SYN_DATA/'
 REAL_DATA_OUTPUT_DIR = OUTPUT_DIR + 'REAL_DATA/'
-POWER_DIR = OUTPUT_DIR + 'POWER/'
 
 RESULTS_DIR = 'RESULTS/'
 
@@ -30,7 +30,6 @@ shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
 os.makedirs(MODELS_OUTPUT_DIR)
 os.makedirs(SYN_DATA_OUTPUT_DIR)
 os.makedirs(REAL_DATA_OUTPUT_DIR)
-os.makedirs(POWER_DIR)
 
 os.makedirs(RESULTS_DIR)
 
@@ -55,7 +54,7 @@ def output_dirs(dist, n, k):
 def train_and_generate_samples(num_samples_available_to_model):
     # Generate real and synthetic samples:
     for k in range(NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE):
-        for dist in UNIVARIATE_DISTRIBUTIONS:
+        for dist in MULTIVARIATE_DISTRIBUTIONS:
             # Set up output directories
             model_1_dir, model_2_dir, syn_data_1_dir, syn_data_2_dir, real_data_1_dir, real_data_2_dir = output_dirs(dist, num_samples_available_to_model, k)
 
@@ -91,21 +90,16 @@ def compute_power_between_distributions(num_samples_available_to_model, dist_1, 
         _, _, syn_data_1_dir, _, real_data_1_dir, _ = output_dirs(dist_1, num_samples_available_to_model, k)
         _, _, _, syn_data_2_dir, _, real_data_2_dir = output_dirs(dist_2, num_samples_available_to_model, k)
 
-        # Set up compute_power_cmd
-        real_dataset_1 = real_data_1_dir + 'data.npy'
-        syn_dataset_1 = syn_data_1_dir + 'data.npy'
-        real_dataset_2 = real_data_2_dir + 'data.npy'
-        syn_dataset_2 = syn_data_2_dir + 'data.npy'
-        power_dir = '{0}[{1}*{2}]_[n={3}]_[k={4}]/'.format(POWER_DIR, dist_1, dist_2, num_samples_available_to_model, k)
-        compute_power_cmd = 'python3 compute_univariate_power.py {0} {1} {2} {3} {4}'.format(real_dataset_1, syn_dataset_1, real_dataset_2, syn_dataset_2, power_dir)
+        syn_data_1 = np.load(syn_data_1_dir + 'data.npy')
+        real_data_1 = np.load(real_data_1_dir + 'data.npy')
+        syn_data_2 = np.load(syn_data_2_dir + 'data.npy')
+        real_data_2 = np.load(real_data_2_dir + 'data.npy')
 
-        # Run power computation
-        os.system(compute_power_cmd)
+        real_power = multivariate_power_calculation(real_data_1, real_data_2, len(real_data_1), len(real_data_2), alpha=0.05, k=1)
+        syn_power = multivariate_power_calculation(syn_data_1, syn_data_2, len(syn_data_1), len(syn_data_2), alpha=0.05, k=1)
 
-        # Collect results
-        results = open(power_dir + 'results.txt').readlines()[0].split(',')
-        t_real_power.append(float(results[0]))
-        t_syn_power.append(float(results[1]))
+        t_real_power.append(real_power)
+        t_syn_power.append(syn_power)
 
     # Save power results:
     results_pth = '{0}[{1}*{2}]/'.format(RESULTS_DIR, dist_1, dist_2)
@@ -130,10 +124,10 @@ def compute_all_power_tests(num_samples_available_to_model):
     # For every combination of distributions, compute the power
     #  of a t test distinguishing between real and synthetic samples respectively
     #  and save the results.
-    for i in range(len(UNIVARIATE_DISTRIBUTIONS)):
-        for j in range(i, len(UNIVARIATE_DISTRIBUTIONS)):
-            dist_1 = UNIVARIATE_DISTRIBUTIONS[i]
-            dist_2 = UNIVARIATE_DISTRIBUTIONS[j]
+    for i in range(len(MULTIVARIATE_DISTRIBUTIONS)):
+        for j in range(i, len(MULTIVARIATE_DISTRIBUTIONS)):
+            dist_1 = MULTIVARIATE_DISTRIBUTIONS[i]
+            dist_2 = MULTIVARIATE_DISTRIBUTIONS[j]
             compute_power_between_distributions(num_samples_available_to_model, dist_1, dist_2)
 
 
@@ -141,7 +135,6 @@ def clear_output_dirs():
     shutil.rmtree(MODELS_OUTPUT_DIR)
     shutil.rmtree(SYN_DATA_OUTPUT_DIR)
     shutil.rmtree(REAL_DATA_OUTPUT_DIR)
-    shutil.rmtree(POWER_DIR)
 
 
 # ========== MAIN ==========
@@ -152,10 +145,10 @@ for i in range(NUM_SAMPLES_AVAILABLE_TO_MODEL.shape[0]):
     clear_output_dirs()
 
 # ========== VISUALIZATION ==========
-for i in range(len(UNIVARIATE_DISTRIBUTIONS)):
-    for j in range(i, len(UNIVARIATE_DISTRIBUTIONS)):
-        dist_1 = UNIVARIATE_DISTRIBUTIONS[i]
-        dist_2 = UNIVARIATE_DISTRIBUTIONS[j]
+for i in range(len(MULTIVARIATE_DISTRIBUTIONS)):
+    for j in range(i, len(MULTIVARIATE_DISTRIBUTIONS)):
+        dist_1 = MULTIVARIATE_DISTRIBUTIONS[i]
+        dist_2 = MULTIVARIATE_DISTRIBUTIONS[j]
 
         results_pth = '{0}[{1}*{2}]/'.format(RESULTS_DIR, dist_1, dist_2)
         real_results_pth = results_pth + 'real.npy'

@@ -8,7 +8,7 @@ import seaborn as sns
 import shutil
 
 from brainpedia.brainpedia import Brainpedia
-from utils.multiple_comparison import power_calculations
+from utils.multiple_comparison import fmri_power_calculations
 
 
 # ========== HYPERPARAMETERS ==========
@@ -129,7 +129,7 @@ def compute_power_between_datasets(dataset_1_dir, dataset_1_cache_dir, dataset_2
     d1, _ = dataset_1_brainpedia.all_data()
     d2, _ = dataset_2_brainpedia.all_data()
 
-    return power_calculations(d1, d2, len(d1), len(d2), alpha=0.05, k=1)
+    return fmri_power_calculations(d1, d2, len(d1), len(d2), alpha=0.05, k=1)
 
 def compute_power_tests(num_samples_available_to_model, tag):
     t_real_power_tag_null = []

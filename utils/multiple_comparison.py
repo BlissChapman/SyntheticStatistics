@@ -41,7 +41,7 @@ def rejection_mask_overlap(rejections, mask_rejections):
     fn = float(fn) / float(max(total_roi_reject, 1))
     return tp, tn, fp, fn
 
-def power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1):
+def fmri_power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1):
     fdr_rejections = []
     tp_ratios = []
     tn_ratios = []
@@ -68,7 +68,28 @@ def power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1):
     fdr_power = np.mean(fdr_rejections)
     return fdr_power, tp_ratios, tn_ratios, fp_ratios, fn_ratios
 
+def multivariate_power_calculation(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
+    fdr_rejections = []
 
+    for br in range(k):
+        d1_idx = np.random.randint(low=0, high=d1.shape[0], size=n_1)
+        d2_idx = np.random.randint(low=0, high=d2.shape[0], size=n_2)
+
+        d1_replicate = d1[d1_idx].squeeze()
+        d2_replicate = d2[d2_idx].squeeze()
+
+        two_sample_t_test_p_vals_by_dim = np.zeros(d1.shape[1:])
+        for i in range(two_sample_t_test_p_vals_by_dim.shape[0]):
+            d1_vals = d1[:, i]
+            d2_vals = d2[:, i]
+            two_sample_t_test_p_vals_by_dim[i] = ttest_ind(d1_vals, d2_vals, equal_var=True).pvalue
+
+        fdr_reject_by_dim = fdr_correction(two_sample_t_test_p_vals_by_dim, alpha=alpha)[0]
+        fdr_reject = sum(fdr_reject_by_dim) > 0  # reject if any dim rejects
+        fdr_rejections.append(fdr_reject)
+
+    fdr_power = np.mean(fdr_rejections)
+    return fdr_power
 
 # Authors: Josef Pktd and example from H Raja and rewrite from Vincent Davis
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
