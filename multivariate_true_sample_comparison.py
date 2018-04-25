@@ -13,10 +13,10 @@ from utils.multiple_comparison import multivariate_power_calculation
 # ***RESEARCHER BEWARE***
 # Total number of GANs =
 #   |NUM_SAMPLES_AVAILABLE_TO_MODEL| * NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE * |MULTIVARIATE_DISTRIBUTIONS| * 2
-NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10, 250, num=2)
+NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(2, 250, num=2)
 NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 3
 NUM_SYN_SAMPLES_TO_GENERATE = 25000
-MULTIVARIATE_DISTRIBUTIONS = ['m_gaussian_0_0', 'm_gaussian_1_1']  # 'gaussian_1'
+MULTIVARIATE_DISTRIBUTIONS = ['m_gaussian_0_0', 'm_gaussian_01_01']
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'
@@ -78,8 +78,10 @@ def train_and_generate_samples(num_samples_available_to_model):
 
 
 def compute_power_between_distributions(num_samples_available_to_model, dist_1, dist_2):
-    t_real_power = []
-    t_syn_power = []
+    fdr_real_power = []
+    fdr_syn_power = []
+    # hostellings_real_power = []
+    # hostellings_real_power = []
 
     for k in range(NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE):
         # Retrieve data directories
@@ -95,29 +97,41 @@ def compute_power_between_distributions(num_samples_available_to_model, dist_1, 
         syn_data_2 = np.load(syn_data_2_dir + 'data.npy')
         real_data_2 = np.load(real_data_2_dir + 'data.npy')
 
-        real_power = multivariate_power_calculation(real_data_1, real_data_2, len(real_data_1), len(real_data_2), alpha=0.05, k=1)
-        syn_power = multivariate_power_calculation(syn_data_1, syn_data_2, len(syn_data_1), len(syn_data_2), alpha=0.05, k=1)
+        real_fdr_power = multivariate_power_calculation(real_data_1, real_data_2, len(real_data_1), len(real_data_2), alpha=0.05, k=1)
+        syn_fdr_power = multivariate_power_calculation(syn_data_1, syn_data_2, len(syn_data_1), len(syn_data_2), alpha=0.05, k=1)
 
-        t_real_power.append(real_power)
-        t_syn_power.append(syn_power)
+        fdr_real_power.append(real_fdr_power)
+        fdr_syn_power.append(syn_fdr_power)
+        # hostellings_real_power.append(real_hostellings_power)
+        # hostellings_real_power.append(syn_hostellings_power)
 
     # Save power results:
     results_pth = '{0}[{1}*{2}]/'.format(RESULTS_DIR, dist_1, dist_2)
-    real_results_pth = results_pth + 'real.npy'
-    syn_results_pth = results_pth + 'syn.npy'
+    fdr_real_results_pth = results_pth + 'fdr_real.npy'
+    fdr_syn_results_pth = results_pth + 'fdr_syn.npy'
+    # hostellings_real_results_pth = results_pth + 'hostellings_real.npy'
+    # hostellings_syn_results_pth = results_pth + 'hostellings_syn.npy'
     if not os.path.exists(results_pth):
         os.makedirs(results_pth)
-        t_real_power_for_sample_size_for_dist1_dist2 = []
-        t_syn_power_for_sample_size_for_dist1_dist2 = []
+        fdr_real_power_for_sample_size_for_dist1_dist2 = []
+        fdr_syn_power_for_sample_size_for_dist1_dist2 = []
+        # hostellings_real_power_for_sample_size_for_dist1_dist2 = []
+        # hostellings_syn_power_for_sample_size_for_dist1_dist2 = []
     else:
-        t_real_power_for_sample_size_for_dist1_dist2 = np.load(real_results_pth).tolist()
-        t_syn_power_for_sample_size_for_dist1_dist2 = np.load(syn_results_pth).tolist()
+        fdr_real_power_for_sample_size_for_dist1_dist2 = np.load(fdr_real_results_pth).tolist()
+        fdr_syn_power_for_sample_size_for_dist1_dist2 = np.load(fdr_syn_results_pth).tolist()
+        # hostellings_real_power_for_sample_size_for_dist1_dist2 = np.load(hostellings_real_results_pth).tolist()
+        # hostellings_syn_power_for_sample_size_for_dist1_dist2 = np.load(hostellings_syn_results_pth).tolist()
 
-    t_real_power_for_sample_size_for_dist1_dist2.append(t_real_power)
-    t_syn_power_for_sample_size_for_dist1_dist2.append(t_syn_power)
+    fdr_real_power_for_sample_size_for_dist1_dist2.append(fdr_real_power)
+    fdr_syn_power_for_sample_size_for_dist1_dist2.append(fdr_syn_power)
+    # hostellings_real_power_for_sample_size_for_dist1_dist2.append(hostellings_real_power)
+    # hostellings_syn_power_for_sample_size_for_dist1_dist2.append(hostellings_syn_power)
 
-    np.save(real_results_pth, np.array(t_real_power_for_sample_size_for_dist1_dist2))
-    np.save(syn_results_pth, np.array(t_syn_power_for_sample_size_for_dist1_dist2))
+    np.save(fdr_real_results_pth, np.array(fdr_real_power_for_sample_size_for_dist1_dist2))
+    np.save(fdr_syn_results_pth, np.array(fdr_syn_power_for_sample_size_for_dist1_dist2))
+    # np.save(hostellings_real_results_pth, np.array(hostellings_real_power_for_sample_size_for_dist1_dist2))
+    # np.save(hostellings_syn_results_pth, np.array(hostellings_syn_power_for_sample_size_for_dist1_dist2))
 
 
 def compute_all_power_tests(num_samples_available_to_model):
@@ -151,15 +165,21 @@ for i in range(len(MULTIVARIATE_DISTRIBUTIONS)):
         dist_2 = MULTIVARIATE_DISTRIBUTIONS[j]
 
         results_pth = '{0}[{1}*{2}]/'.format(RESULTS_DIR, dist_1, dist_2)
-        real_results_pth = results_pth + 'real.npy'
-        syn_results_pth = results_pth + 'syn.npy'
+        fdr_real_results_pth = results_pth + 'fdr_real.npy'
+        fdr_syn_results_pth = results_pth + 'fdr_syn.npy'
+        # hostellings_real_results_pth = results_pth + 'hostellings_real.npy'
+        # hostellings_syn_results_pth = results_pth + 'hostellings_syn.npy'
 
-        t_real_power_for_sample_size_for_dist1_dist2 = np.load(real_results_pth).T
-        t_syn_power_for_sample_size_for_dist1_dist2 = np.load(syn_results_pth).T
+        fdr_real_power_for_sample_size_for_dist1_dist2 = np.load(fdr_real_results_pth).T
+        fdr_syn_power_for_sample_size_for_dist1_dist2 = np.load(fdr_syn_results_pth).T
+        # hostellings_real_power_for_sample_size_for_dist1_dist2 = np.load(hostellings_real_results_pth).T
+        # hostellings_syn_power_for_sample_size_for_dist1_dist2 = np.load(hostellings_syn_results_pth).T
 
         plt.figure()
-        sns.tsplot(data=t_real_power_for_sample_size_for_dist1_dist2, time=NUM_SAMPLES_AVAILABLE_TO_MODEL, ci=[68, 95], color='blue', condition='T Test Real')
-        sns.tsplot(data=t_syn_power_for_sample_size_for_dist1_dist2, time=NUM_SAMPLES_AVAILABLE_TO_MODEL, ci=[68, 95], color='orange', condition='T Test Syn')
+        sns.tsplot(data=fdr_real_power_for_sample_size_for_dist1_dist2, time=NUM_SAMPLES_AVAILABLE_TO_MODEL, ci=[68, 95], color='blue', condition='FDR Test Real')
+        sns.tsplot(data=fdr_syn_power_for_sample_size_for_dist1_dist2, time=NUM_SAMPLES_AVAILABLE_TO_MODEL, ci=[68, 95], color='orange', condition='FDR Test Syn')
+        # sns.tsplot(data=hostellings_real_power_for_sample_size_for_dist1_dist2, time=NUM_SAMPLES_AVAILABLE_TO_MODEL, ci=[68, 95], color='green', condition='Hotellings Test Real')
+        # sns.tsplot(data=hostellings_syn_power_for_sample_size_for_dist1_dist2, time=NUM_SAMPLES_AVAILABLE_TO_MODEL, ci=[68, 95], color='red', condition='Hotellings Test Syn')
         plt.title('{0} vs {1}'.format(dist_1, dist_2))
         plt.xlabel('Real Samples')
         plt.ylabel('Power')

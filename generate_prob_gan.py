@@ -28,7 +28,7 @@ os.makedirs(args.output_dir)
 # ========== Hyperparameters ==========
 BATCH_SIZE = 16
 MODEL_DIMENSIONALITY = 64
-DATA_DIMENSIONALITY = 5
+DATA_DIMENSIONALITY = 10**2
 NOISE_SAMPLE_LENGTH = 64
 
 description_f = open(args.output_dir + 'description.txt', 'w')
