@@ -1,7 +1,87 @@
 # Synthetic Statistics
-This project explores the application of generative modeling techniques to statistical testing.
+This research project explores the application of generative modeling techniques to power analyses and statistical testing.
 
-### Objective
+## Synthetic Power Analyses
+> In a scientific study, one typically aims for a statistical power of 80%, implying that a true effect in the population is
+> detected with a 80% chance. Power computations allow researchers to compute the minimal number of subjects to obtain the
+> aimed statistical power. As such, power calculations avoid spending time and money on studies that are futile, and also
+> prevent wasting time and money adding extra subjects, when sufficient power was already available.
+
+> Mounting evidence over the last few years suggest that published neuroscience research suffer from low power, and especially
+> for published fMRI experiments. Not only does low power decrease the chance of detecting a true effect, it also reduces the
+> chance that a statistically significant result indicates a true effect ([Ioannidis, 2005](http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0020124)). Put another way, findings with the
+> least power will be the least reproducible, and thus a (prospective) power analysis is a critical component of any paper.
+
+Source: [Power and sample size calculations for fMRI studies based on the prevalence of active peaks](https://www.biorxiv.org/content/biorxiv/early/2016/04/20/049429.full.pdf)
+
+> Our current scan rate is $563 per hour.
+
+Source: [University of Michigan Functional Magnetic Resonance Imaging Laboratory](http://fmri.research.umich.edu/users/billing.php)
+
+### Proposal
+Synthetic functional magnetic resonance images generated with [state-of-the-art generative modeling techniques](https://github.com/BlissChapman/ICW-fMRI-GAN) could serve as a low-cost replacement for pilot data used in power analyses.
+
+**WANTED:** the smallest sample size needed for a study with 80% power
+**NOT WANTED:**
+1) Wasted time/money on futile experiments
+2) Wasted resources on extra subjects
+3) Underpowered studies
+
+### Experiments
+We explore the proposal through univariate, multivariate, and neuroimaging experiments. In the figures below, if the synthetic and real curves are the same shape, then using synthetic data as a replacement for pilot data will yield a similar sample size requirement estimate as we would have achieved by using real data. Since we can synthesize cognitive process label combinations that do not exist in the original dataset, we can formulate power analyses with data that has never been collected before.
+
+###### [NULL] Gaussian(0, 1) vs Gaussian(0, 1) w/ 100k True Samples
+![](examples/test_time_sample_size_vs_power/gaussian_0_vs_gaussian_0.png)
+
+###### [NULL] Gaussian(0, 1) vs Gaussian(0, 1) w/ 100 True Samples
+![](examples/test_time_sample_size_vs_power/100_gaussian_0_vs_gaussian_0.png)
+
+###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(1, 1) w/ 100k True Samples
+![](examples/test_time_sample_size_vs_power/gaussian_0_vs_gaussian_1.png)
+
+###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(1, 1) w/ 100 True Samples
+![](examples/test_time_sample_size_vs_power/100_gaussian_0_vs_gaussian_1.png)
+
+###### [NULL] ChiSquare(9) vs ChiSquare(9) w/ 100k True Samples
+![](examples/test_time_sample_size_vs_power/chi_9_vs_chi_9.png)
+
+###### [NULL] ChiSquare(9) vs ChiSquare(9) w/ 100 True Samples
+![](examples/test_time_sample_size_vs_power/100_chi_9_vs_chi_9.png)
+
+###### [ALTERNATIVE] ChiSquare(9) vs Exp(9) w/ 100k True Samples
+![](examples/test_time_sample_size_vs_power/chi_9_vs_exp_9.png)
+
+###### [ALTERNATIVE] ChiSquare(9) vs Exp(9) w/ 100 True Samples
+![](examples/test_time_sample_size_vs_power/100_chi_9_vs_exp_9.png)
+
+###### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100k True Samples
+![](examples/test_time_sample_size_vs_power/gaussian_mix_vs_exp_9.png)
+
+###### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100 True Samples
+![](examples/test_time_sample_size_vs_power/100_gaussian_mix_vs_exp_9.png)
+
+###### [NULL] Visual vs Visual w/in Brainpedia
+![Visual vs Visual](examples/test_time_sample_size_vs_power/fmri_fdr_visual_vs_visual.png)
+
+###### [ALTERNATIVE] Visual vs Non-Visual w/in Brainpedia
+![Visual vs Non-Visual](examples/test_time_sample_size_vs_power/fmri_fdr_visual_vs_non_visual.png)
+
+##### Notes on Power Calculation
+**Univariate Power**
+1) Use bootstrap techniques to compute the distribution of the t test statistic.
+2) Compute p value for every test statistic.
+3) Power is approximately mean[1(p_i < alpha)]
+
+_NOTE: If the distribution is known to be Gaussian, we can directly compute the t test statistic without bootstrap techniques._
+
+**Multivariate Power**
+_[Discussion to come]_
+
+**fMRI Power**
+_[Discussion to come]_
+
+
+## Synthetic Statistical Testing
 Test whether two distributions P and Q are different based on samples drawn from each of them.
 
 ### Parametric Approach
@@ -33,15 +113,6 @@ The goal of this project is to show that sampling synthetic data from the underl
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(0.1, 1)
 ![](examples/true_sample_size_vs_power/gaussian_0_vs_gaussian_0_1.png)
-
-###### [NULL] [ZOOMED] Gaussian(0, 1) vs Gaussian(0, 1)
-![](examples/true_sample_size_vs_power/zoomed_gaussian_0_vs_gaussian_0.png)
-
-###### [NULL] [ZOOMED] Gaussian(0.1, 1) vs Gaussian(0.1, 1)
-![](examples/true_sample_size_vs_power/zoomed_gaussian_0_1_vs_gaussian_0_1.png)
-
-###### [ALTERNATIVE] [ZOOMED] Gaussian(0, 1) vs Gaussian(0.1, 1)
-![](examples/true_sample_size_vs_power/zoomed_gaussian_0_vs_gaussian_0_1.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs GaussianMix
 ![](examples/true_sample_size_vs_power/gaussian_0_vs_gaussian_mix.png)
@@ -78,55 +149,3 @@ The goal of this project is to show that sampling synthetic data from the underl
 
 ###### [ALTERNATIVE] Visual vs NON-Visual
 ![](examples/true_sample_size_vs_power/fmri_visual_vs_non_visual.png)
-
-### Number of Test Time Samples vs Power
-#### Gaussians
-###### [NULL] Gaussian(0, 1) vs Gaussian(0, 1) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/gaussian_0_vs_gaussian_0.png)
-
-###### [NULL] Gaussian(0, 1) vs Gaussian(0, 1) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_gaussian_0_vs_gaussian_0.png)
-
-###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(1, 1) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/gaussian_0_vs_gaussian_1.png)
-
-###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(1, 1) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_gaussian_0_vs_gaussian_1.png)
-
-#### Non-Gaussian
-###### [NULL] ChiSquare(9) vs ChiSquare(9) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/chi_9_vs_chi_9.png)
-
-###### [NULL] ChiSquare(9) vs ChiSquare(9) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_chi_9_vs_chi_9.png)
-
-###### [ALTERNATIVE] ChiSquare(9) vs Exp(9) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/chi_9_vs_exp_9.png)
-
-###### [ALTERNATIVE] ChiSquare(9) vs Exp(9) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_chi_9_vs_exp_9.png)
-
-###### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/gaussian_mix_vs_exp_9.png)
-
-###### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_gaussian_mix_vs_exp_9.png)
-
-#### Neuroscientific Application
-> Mounting evidence over the last few years suggest that published neuroscience research suffer from low power, and especially
-> for published fMRI experiments. Not only does low power decrease the chance of detecting a true effect, it also reduces the
-> chance that a statistically significant result indicates a true effect ([Ioannidis, 2005](http://journals.plos.org/plosmedicine/article?id=10.1371/journal.pmed.0020124)). Put another way, findings with the
-> least power will be the least reproducible, and thus a (prospective) power analysis is a critical component of any paper.
-<!--
-> In a scientific study, one typically aims for a statistical power of 80%, implying that a true effect in the population is
-> detected with a 80% chance. Power computations allow researchers to compute the minimal number of subjects to obtain the
-> aimed statistical power. As such, power calculations avoid spending time and money on studies that are futile, and also
-> prevent wasting time and money adding extra subjects, when sufficient power was already available. -->
-
-Source: [Power and sample size calculations for fMRI studies based on the prevalence of active peaks](https://www.biorxiv.org/content/biorxiv/early/2016/04/20/049429.full.pdf)
-
-###### [NULL] Visual vs Visual w/in Brainpedia
-![Visual vs Visual](examples/test_time_sample_size_vs_power/fmri_fdr_visual_vs_visual.png)
-
-###### [ALTERNATIVE] Visual vs Non-Visual w/in Brainpedia
-![Visual vs Non-Visual](examples/test_time_sample_size_vs_power/fmri_fdr_visual_vs_non_visual.png)
