@@ -28,7 +28,7 @@ os.makedirs(args.output_dir)
 # ========== Hyperparameters ==========
 BATCH_SIZE = 16
 MODEL_DIMENSIONALITY = 64
-DATA_DIMENSIONALITY = 10**2
+DATA_DIMENSIONALITY = 1
 NOISE_SAMPLE_LENGTH = 64
 
 description_f = open(args.output_dir + 'description.txt', 'w')
@@ -58,4 +58,6 @@ for step in range(args.num_samples):
 
 # Write samples to disk
 synthetic_data = np.array(synthetic_data)
+if DATA_DIMENSIONALITY == 1:
+    synthetic_data = synthetic_data.flatten()
 np.save(args.output_dir + 'data', synthetic_data)

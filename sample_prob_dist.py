@@ -15,7 +15,7 @@ args = parser.parse_args()
 # Housekeeping
 shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
-np.random.seed(1)
+np.random.seed(seed=None) # reads from /dev/random to seed the random state
 
 # Generate samples and save them to disk
 data = sample(args.num_samples, args.distribution)

@@ -12,10 +12,10 @@ import shutil
 # ***RESEARCHER BEWARE***
 # Total number of GANs =
 #   |NUM_SAMPLES_AVAILABLE_TO_MODEL| * NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE * |UNIVARIATE_DISTRIBUTIONS| * 2
-NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10, 250, num=10)
-NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 5
+NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10, 250, num=2)
+NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 3
 NUM_SYN_SAMPLES_TO_GENERATE = 25000
-UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_0_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']  # 'gaussian_1'
+UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_0_1']#, 'chi_square_9', 'exp_9', 'gaussian_mixture']  # 'gaussian_1'
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'
@@ -60,22 +60,22 @@ def train_and_generate_samples(num_samples_available_to_model):
             model_1_dir, model_2_dir, syn_data_1_dir, syn_data_2_dir, real_data_1_dir, real_data_2_dir = output_dirs(dist, num_samples_available_to_model, k)
 
             # Set up commands
-            train_cmd_1 = 'python3 train_prob_gan.py {0} {1} {2}'.format(dist, num_samples_available_to_model, model_1_dir)
-            train_cmd_2 = 'python3 train_prob_gan.py {0} {1} {2}'.format(dist, num_samples_available_to_model, model_2_dir)
+            generate_real_cmd_1 = 'python3 sample_prob_dist.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_1_dir)
+            generate_real_cmd_2 = 'python3 sample_prob_dist.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_2_dir)
+
+            train_cmd_1 = 'python3 train_prob_gan.py {0} {1}'.format(real_data_1_dir+'data.npy', model_1_dir)
+            train_cmd_2 = 'python3 train_prob_gan.py {0} {1}'.format(real_data_2_dir+'data.npy', model_2_dir)
 
             generate_syn_cmd_1 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_1_dir + 'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_1_dir)
             generate_syn_cmd_2 = 'python3 generate_prob_gan.py {0} {1} {2}'.format(model_2_dir + 'generator', NUM_SYN_SAMPLES_TO_GENERATE, syn_data_2_dir)
 
-            generate_real_cmd_1 = 'python3 sample_prob_dist.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_1_dir)
-            generate_real_cmd_2 = 'python3 sample_prob_dist.py {0} {1} {2}'.format(dist, num_samples_available_to_model, real_data_2_dir)
-
             # Run commands
+            os.system(generate_real_cmd_1)
+            os.system(generate_real_cmd_2)
             os.system(train_cmd_1)
             os.system(train_cmd_2)
             os.system(generate_syn_cmd_1)
             os.system(generate_syn_cmd_2)
-            os.system(generate_real_cmd_1)
-            os.system(generate_real_cmd_2)
 
 
 def compute_power_between_distributions(num_samples_available_to_model, dist_1, dist_2):

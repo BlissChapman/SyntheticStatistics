@@ -12,8 +12,7 @@ from torch.autograd import Variable
 
 
 parser = argparse.ArgumentParser(description="Train ProbabilityDistGAN")
-parser.add_argument('distribution', choices=['gaussian_0', 'gaussian_0_1', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture', 'm_gaussian_0_0', 'm_gaussian_01_01'], help='the univariate probaility distribution from which training data should be sampled')
-parser.add_argument('num_training_samples', type=int, help='the number of samples to use when training the ProbabilityDistGAN')
+parser.add_argument('pth_to_train_data', help='the path to the data used to train the GAN')
 parser.add_argument('output_dir', help='the directory to save training results')
 args = parser.parse_args()
 
@@ -22,10 +21,8 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # ========== Hyperparameters ==========
-TRAINING_STEPS = 100
 BATCH_SIZE = 1
 MODEL_DIMENSIONALITY = 64
-DATA_DIMENSIONALITY = 10**2
 NOISE_SAMPLE_LENGTH = 64
 CRITIC_UPDATES_PER_GENERATOR_UPDATE = 1
 LAMBDA = 10
@@ -33,10 +30,8 @@ VISUALIZATION_INTERVAL = 10000
 
 description_f = open(args.output_dir + 'description.txt', 'w')
 description_f.write('DATE: {0}\n\n'.format(datetime.datetime.now().strftime('%b-%d-%I%M%p-%G')))
-description_f.write('TRAINING_STEPS: {0}\n'.format(TRAINING_STEPS))
 description_f.write('BATCH_SIZE: {0}\n'.format(BATCH_SIZE))
 description_f.write('MODEL_DIMENSIONALITY: {0}\n'.format(MODEL_DIMENSIONALITY))
-description_f.write('DATA_DIMENSIONALITY: {0}\n'.format(DATA_DIMENSIONALITY))
 description_f.write('NOISE_SAMPLE_LENGTH: {0}\n'.format(NOISE_SAMPLE_LENGTH))
 description_f.write('CRITIC_UPDATES_PER_GENERATOR_UPDATE: {0}\n'.format(CRITIC_UPDATES_PER_GENERATOR_UPDATE))
 description_f.write('LAMBDA: {0}\n'.format(LAMBDA))
@@ -74,20 +69,22 @@ def batch_generator(data, output_width, batch_size, cuda):
             yield data_batch
 
 
-real_data = sample(args.num_training_samples, distribution=args.distribution)
-real_data_generator = batch_generator(real_data, DATA_DIMENSIONALITY, BATCH_SIZE, CUDA)
+real_data = np.load(args.pth_to_train_data)
+output_width = real_data.shape[1] if len(real_data.shape) >= 2 else 1
+real_data_generator = batch_generator(real_data, output_width, BATCH_SIZE, CUDA)
 
 # ========== Models ==========
 generator = models.ProbabilityDistGAN.Generator(input_width=NOISE_SAMPLE_LENGTH,
-                                                output_width=DATA_DIMENSIONALITY,
+                                                output_width=output_width,
                                                 dimensionality=MODEL_DIMENSIONALITY,
                                                 cudaEnabled=CUDA)
-critic = models.ProbabilityDistGAN.Critic(input_width=DATA_DIMENSIONALITY,
+critic = models.ProbabilityDistGAN.Critic(input_width=output_width,
                                           dimensionality=MODEL_DIMENSIONALITY,
                                           cudaEnabled=CUDA)
 
 # ========= Training =========
-for training_step in range(0, TRAINING_STEPS):
+num_training_steps = max(100, real_data.shape[0])
+for training_step in range(0, num_training_steps):
     # Train critic
     for critic_step in range(CRITIC_UPDATES_PER_GENERATOR_UPDATE):
         real_data_batch = Variable(next(real_data_generator))
