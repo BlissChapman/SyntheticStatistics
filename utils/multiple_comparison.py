@@ -15,27 +15,38 @@ def rejecting_voxels(d1, d2, alpha=0.05):
     return fdr_correction(two_sample_t_test_p_vals_by_voxel, alpha=alpha)[0]
 
 def rejection_mask_overlap(rejections, mask_rejections):
-    num_overlap = 0
-    total_mask_reject = 0
-    total_either_reject = 0
+    tp = 0
+    tn = 0
+    fp = 0
+    fn = 0
+    total_roi_reject = 0
+    total_roi_accept = 0
+
     for i in range(rejections.shape[0]):
         for j in range(rejections.shape[1]):
             for k in range(rejections.shape[2]):
                 rejection = rejections[i][j][k]
                 mask_reject = mask_rejections[i][j][k]
 
-                num_overlap += (rejection and mask_reject)
-                total_mask_reject += mask_reject
-                total_either_reject += (rejection or mask_reject)
+                tp += (rejection and mask_reject)
+                tn += (not rejection and not mask_reject)
+                fp += (rejection and not mask_reject)
+                fn += (not rejection and mask_reject)
+                total_roi_reject += mask_reject
+                total_roi_accept += (not mask_reject)
 
-    overlap_mask_ratio = float(num_overlap) / float(max(1, total_mask_reject))
-    overlap_either_ratio = float(num_overlap) / float(max(1, total_either_reject))
-    return overlap_mask_ratio, overlap_either_ratio
+    tp = float(tp) / float(max(total_roi_reject, 1))
+    tn = float(tn) / float(max(total_roi_accept, 1))
+    fp = float(fp) / float(max(total_roi_accept, 1))
+    fn = float(fn) / float(max(total_roi_reject, 1))
+    return tp, tn, fp, fn
 
 def power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1):
     fdr_rejections = []
-    overlap_mask_rejection_ratios = []
-    overlap_either_rejection_ratios = []
+    tp_ratios = []
+    tn_ratios = []
+    fp_ratios = []
+    fn_ratios = []
 
     for br in range(k):
         d1_idx = np.random.randint(low=0, high=d1.shape[0], size=n_1)
@@ -48,12 +59,14 @@ def power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1):
         fdr_reject = sum(fdr_reject_by_voxel) > 0  # reject if any voxel rejects
         fdr_rejections.append(fdr_reject)
 
-        overlap_mask_ratio, overlap_either_ratio = rejection_mask_overlap(fdr_reject_by_voxel, overlap_mask)
-        overlap_mask_rejection_ratios.append(overlap_mask_ratio)
-        overlap_either_rejection_ratios.append(overlap_either_ratio)
+        tp, tn, fp, fn = rejection_mask_overlap(fdr_reject_by_voxel, overlap_mask)
+        tp_ratios.append(tp)
+        tn_ratios.append(tn)
+        fp_ratios.append(fp)
+        fn_ratios.append(fn)
 
     fdr_power = np.mean(fdr_rejections)
-    return fdr_power, overlap_mask_rejection_ratios, overlap_either_rejection_ratios
+    return fdr_power, tp_ratios, tn_ratios, fp_ratios, fn_ratios
 
 
 
