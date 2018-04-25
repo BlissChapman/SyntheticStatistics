@@ -12,10 +12,10 @@ import shutil
 # ***RESEARCHER BEWARE***
 # Total number of GANs =
 #   |NUM_SAMPLES_AVAILABLE_TO_MODEL| * NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE * |UNIVARIATE_DISTRIBUTIONS| * 2
-NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10, 250, num=2)
-NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 3
+NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(10, 250, num=20)
+NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 5
 NUM_SYN_SAMPLES_TO_GENERATE = 25000
-UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_0_1']#, 'chi_square_9', 'exp_9', 'gaussian_mixture']  # 'gaussian_1'
+UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_0_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']  # 'gaussian_1'
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'
