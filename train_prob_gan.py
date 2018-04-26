@@ -21,6 +21,7 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # ========== Hyperparameters ==========
+NUM_TRAINING_STEPS = 10*6
 BATCH_SIZE = 1
 MODEL_DIMENSIONALITY = 64
 NOISE_SAMPLE_LENGTH = 64
@@ -29,6 +30,7 @@ LAMBDA = 10
 VISUALIZATION_INTERVAL = 10000
 
 description_f = open(args.output_dir + 'description.txt', 'w')
+description_f.write('NUM_TRAINING_STEPS: {0}\n'.format(NUM_TRAINING_STEPS))
 description_f.write('DATE: {0}\n\n'.format(datetime.datetime.now().strftime('%b-%d-%I%M%p-%G')))
 description_f.write('BATCH_SIZE: {0}\n'.format(BATCH_SIZE))
 description_f.write('MODEL_DIMENSIONALITY: {0}\n'.format(MODEL_DIMENSIONALITY))
@@ -83,8 +85,7 @@ critic = models.ProbabilityDistGAN.Critic(input_width=output_width,
                                           cudaEnabled=CUDA)
 
 # ========= Training =========
-num_training_steps = max(100, real_data.shape[0])
-for training_step in range(0, num_training_steps):
+for training_step in range(0, NUM_TRAINING_STEPS):
     # Train critic
     for critic_step in range(CRITIC_UPDATES_PER_GENERATOR_UPDATE):
         real_data_batch = Variable(next(real_data_generator))
