@@ -14,35 +14,46 @@ def rejecting_voxels(d1, d2, alpha=0.05):
 
     return fdr_correction(two_sample_t_test_p_vals_by_voxel, alpha=alpha)[0]
 
+def bootstrap_rejecting_voxels_mask(d1, d2, k=10**1, alpha=0.05):
+    fdr_reject_by_voxel_boot = []
+
+    for br in range(k):
+        d1_idx = np.random.randint(low=0, high=d1.shape[0], size=d1.shape[0])
+        d2_idx = np.random.randint(low=0, high=d2.shape[0], size=d2.shape[0])
+
+        d1_replicate = d1[d1_idx].squeeze()
+        d2_replicate = d2[d2_idx].squeeze()
+
+        fdr_reject_by_voxel = rejecting_voxels(d1_replicate, d2_replicate, alpha)
+        fdr_reject_by_voxel_boot.append(fdr_reject_by_voxel)
+
+    return np.mean(fdr_reject_by_voxel_boot, axis=0)
+
+
 def rejection_mask_overlap(rejections, mask_rejections):
     tp = 0
     tn = 0
     fp = 0
     fn = 0
-    total_roi_reject = 0
-    total_roi_accept = 0
 
     for i in range(rejections.shape[0]):
         for j in range(rejections.shape[1]):
             for k in range(rejections.shape[2]):
-                rejection = rejections[i][j][k]
-                mask_reject = mask_rejections[i][j][k]
+                reject = rejections[i][j][k]
+                accept = not reject
+                mask_reject_weight = mask_rejections[i][j][k]
+                mask_accept_weight = 1.0 - mask_reject_weight
 
-                tp += (rejection and mask_reject)
-                tn += (not rejection and not mask_reject)
-                fp += (rejection and not mask_reject)
-                fn += (not rejection and mask_reject)
-                total_roi_reject += mask_reject
-                total_roi_accept += (not mask_reject)
+                tp += (mask_reject_weight * reject)
+                tn += (mask_accept_weight * accept)
+                fp += (mask_accept_weight * reject)
+                fn += (mask_reject_weight * accept)
 
-    tp = float(tp) / float(max(total_roi_reject, 1))
-    tn = float(tn) / float(max(total_roi_accept, 1))
-    fp = float(fp) / float(max(total_roi_accept, 1))
-    fn = float(fn) / float(max(total_roi_reject, 1))
     return tp, tn, fp, fn
 
 def fmri_power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1):
     fdr_rejections = []
+    percent_rejecting_voxels = []
     tp_ratios = []
     tn_ratios = []
     fp_ratios = []
@@ -56,8 +67,12 @@ def fmri_power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1)
         d2_replicate = d2[d2_idx].squeeze()
 
         fdr_reject_by_voxel = rejecting_voxels(d1_replicate, d2_replicate, alpha)
-        fdr_reject = sum(fdr_reject_by_voxel) > 0  # reject if any voxel rejects
+        flattened_fdr_reject_by_voxel = fdr_reject_by_voxel.flatten()
+        fdr_reject = np.sum(flattened_fdr_reject_by_voxel) > 0  # reject if any voxel rejects
+        percent_reject = np.count_nonzero(flattened_fdr_reject_by_voxel) / flattened_fdr_reject_by_voxel.shape[0]
+
         fdr_rejections.append(fdr_reject)
+        percent_rejecting_voxels.append(percent_reject)
 
         tp, tn, fp, fn = rejection_mask_overlap(fdr_reject_by_voxel, overlap_mask)
         tp_ratios.append(tp)
@@ -66,7 +81,7 @@ def fmri_power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1)
         fn_ratios.append(fn)
 
     fdr_power = np.mean(fdr_rejections)
-    return fdr_power, tp_ratios, tn_ratios, fp_ratios, fn_ratios
+    return fdr_power, percent_rejecting_voxels, tp_ratios, tn_ratios, fp_ratios, fn_ratios
 
 def multivariate_power_calculation(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
     fdr_rejections = []
@@ -78,6 +93,7 @@ def multivariate_power_calculation(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
         d1_replicate = d1[d1_idx].squeeze()
         d2_replicate = d2[d2_idx].squeeze()
 
+        # FDR corrected univariate tests
         two_sample_t_test_p_vals_by_dim = np.zeros(d1.shape[1:])
         for i in range(two_sample_t_test_p_vals_by_dim.shape[0]):
             d1_vals = d1[:, i]
@@ -89,7 +105,8 @@ def multivariate_power_calculation(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
         fdr_rejections.append(fdr_reject)
 
     fdr_power = np.mean(fdr_rejections)
-    return fdr_power
+    # hotellings_power = 0.2#np.mean(hotellings_rejections)
+    return fdr_power#, hotellings_power
 
 # Authors: Josef Pktd and example from H Raja and rewrite from Vincent Davis
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
