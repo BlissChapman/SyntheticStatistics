@@ -34,40 +34,40 @@ We explore the potential of synthetic power analyses through univariate, multiva
 If we can train a generative model to synthesize realistic new data, doesn't that mean our training set contains more than enough data for a simple power analysis? Our fMRI generative modeling techniques can synthesize cognitive process label combinations that do not exist in the original dataset. Thus we can formulate power analyses with data that has never been collected before.
 
 ###### [NULL] Gaussian(0, 1) vs Gaussian(0, 1) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/gaussian_0_vs_gaussian_0.png)
+![](examples/power_analyses/gaussian_0_vs_gaussian_0.png)
 
 ###### [NULL] Gaussian(0, 1) vs Gaussian(0, 1) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_gaussian_0_vs_gaussian_0.png)
+![](examples/power_analyses/100_gaussian_0_vs_gaussian_0.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(1, 1) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/gaussian_0_vs_gaussian_1.png)
+![](examples/power_analyses/gaussian_0_vs_gaussian_1.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(1, 1) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_gaussian_0_vs_gaussian_1.png)
+![](examples/power_analyses/100_gaussian_0_vs_gaussian_1.png)
 
 ###### [NULL] ChiSquare(9) vs ChiSquare(9) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/chi_9_vs_chi_9.png)
+![](examples/power_analyses/chi_9_vs_chi_9.png)
 
 ###### [NULL] ChiSquare(9) vs ChiSquare(9) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_chi_9_vs_chi_9.png)
+![](examples/power_analyses/100_chi_9_vs_chi_9.png)
 
 ###### [ALTERNATIVE] ChiSquare(9) vs Exp(9) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/chi_9_vs_exp_9.png)
+![](examples/power_analyses/chi_9_vs_exp_9.png)
 
 ###### [ALTERNATIVE] ChiSquare(9) vs Exp(9) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_chi_9_vs_exp_9.png)
+![](examples/power_analyses/100_chi_9_vs_exp_9.png)
 
 ###### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100k True Samples
-![](examples/test_time_sample_size_vs_power/gaussian_mix_vs_exp_9.png)
+![](examples/power_analyses/gaussian_mix_vs_exp_9.png)
 
 ###### [ALTERNATIVE] GaussianMix vs Exp(9) w/ 100 True Samples
-![](examples/test_time_sample_size_vs_power/100_gaussian_mix_vs_exp_9.png)
+![](examples/power_analyses/100_gaussian_mix_vs_exp_9.png)
 
 ###### [NULL] Visual vs Visual w/in Brainpedia
-![Visual vs Visual](examples/test_time_sample_size_vs_power/fmri_fdr_visual_vs_visual.png)
+![Visual vs Visual](examples/power_analyses/fmri_fdr_visual_vs_visual.png)
 
 ###### [ALTERNATIVE] Visual vs Non-Visual w/in Brainpedia
-![Visual vs Non-Visual](examples/test_time_sample_size_vs_power/fmri_fdr_visual_vs_non_visual.png)
+![Visual vs Non-Visual](examples/power_analyses/fmri_fdr_visual_vs_non_visual.png)
 
 ### Notes on Power Calculation
 ##### Univariate Power
@@ -109,46 +109,46 @@ The goal of this project is to show that sampling synthetic data from the underl
 ## Results
 ### Number of True Samples vs Power
 ###### [NULL] Gaussian(0, 1) vs Gaussian(0, 1)
-![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_gaussian_0.png)
+![](examples/statistical_testing/gaussian_0_vs_gaussian_0.png)
 
 ###### [NULL] Gaussian(0.1, 1) vs Gaussian(0.1, 1)
-![](examples/true_sample_size_vs_power_100_000/gaussian_0_1_vs_gaussian_0_1.png)
+![](examples/statistical_testing/gaussian_0_1_vs_gaussian_0_1.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(0.1, 1)
-![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_gaussian_0_1.png)
+![](examples/statistical_testing/gaussian_0_vs_gaussian_0_1.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs GaussianMix
-![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_gaussian_mix.png)
+![](examples/statistical_testing/gaussian_0_vs_gaussian_mix.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs ChiSquare(9)
-![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_chi_9.png)
+![](examples/statistical_testing/gaussian_0_vs_chi_9.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs Exp(9)
-![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_exp_9.png)
+![](examples/statistical_testing/gaussian_0_vs_exp_9.png)
 
 ###### [NULL] ChiSquare(9) vs ChiSquare(9)
-![](examples/true_sample_size_vs_power_100_000/chi_9_vs_chi_9.png)
+![](examples/statistical_testing/chi_9_vs_chi_9.png)
 
 ###### [ALTERNATIVE] ChiSquare(9) vs Exp(9)
-![](examples/true_sample_size_vs_power_100_000/chi_9_vs_exp_9.png)
+![](examples/statistical_testing/chi_9_vs_exp_9.png)
 
 ###### [ALTERNATIVE] ChiSquare(9) vs GaussianMix
-![](examples/true_sample_size_vs_power_100_000/chi_9_vs_gaussian_mix.png)
+![](examples/statistical_testing/chi_9_vs_gaussian_mix.png)
 
 ###### [NULL] Exp(9) vs Exp(9)
-![](examples/true_sample_size_vs_power_100_000/exp_9_vs_exp_9.png)
+![](examples/statistical_testing/exp_9_vs_exp_9.png)
 
 ###### [ALTERNATIVE] Exp(9) vs GaussianMix
-![](examples/true_sample_size_vs_power_100_000/exp_9_vs_gaussian_mix.png)
+![](examples/statistical_testing/exp_9_vs_gaussian_mix.png)
 
 ###### [NULL] GaussianMix vs GaussianMix
-![](examples/true_sample_size_vs_power_100_000/gaussian_mix_vs_gaussian_mix.png)
+![](examples/statistical_testing/gaussian_mix_vs_gaussian_mix.png)
 
 ###### [NULL] Visual vs Visual
-![](examples/true_sample_size_vs_power_100_000/fmri_visual_vs_visual.png)
+![](examples/statistical_testing/fmri_visual_vs_visual.png)
 
 ###### [NULL] NON-Visual vs NON-Visual
-![](examples/true_sample_size_vs_power_100_000/fmri_non_visual_vs_non_visual.png)
+![](examples/statistical_testing/fmri_non_visual_vs_non_visual.png)
 
 ###### [ALTERNATIVE] Visual vs NON-Visual
-![](examples/true_sample_size_vs_power_100_000/fmri_visual_vs_non_visual.png)
+![](examples/statistical_testing/fmri_visual_vs_non_visual.png)
