@@ -109,46 +109,46 @@ The goal of this project is to show that sampling synthetic data from the underl
 ## Results
 ### Number of True Samples vs Power
 ###### [NULL] Gaussian(0, 1) vs Gaussian(0, 1)
-![](examples/true_sample_size_vs_power/gaussian_0_vs_gaussian_0.png)
+![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_gaussian_0.png)
 
 ###### [NULL] Gaussian(0.1, 1) vs Gaussian(0.1, 1)
-![](examples/true_sample_size_vs_power/gaussian_0_1_vs_gaussian_0_1.png)
+![](examples/true_sample_size_vs_power_100_000/gaussian_0_1_vs_gaussian_0_1.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs Gaussian(0.1, 1)
-![](examples/true_sample_size_vs_power/gaussian_0_vs_gaussian_0_1.png)
+![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_gaussian_0_1.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs GaussianMix
-![](examples/true_sample_size_vs_power/gaussian_0_vs_gaussian_mix.png)
+![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_gaussian_mix.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs ChiSquare(9)
-![](examples/true_sample_size_vs_power/gaussian_0_vs_chi_9.png)
+![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_chi_9.png)
 
 ###### [ALTERNATIVE] Gaussian(0, 1) vs Exp(9)
-![](examples/true_sample_size_vs_power/gaussian_0_vs_exp_9.png)
+![](examples/true_sample_size_vs_power_100_000/gaussian_0_vs_exp_9.png)
 
 ###### [NULL] ChiSquare(9) vs ChiSquare(9)
-![](examples/true_sample_size_vs_power/chi_9_vs_chi_9.png)
+![](examples/true_sample_size_vs_power_100_000/chi_9_vs_chi_9.png)
 
 ###### [ALTERNATIVE] ChiSquare(9) vs Exp(9)
-![](examples/true_sample_size_vs_power/chi_9_vs_exp_9.png)
+![](examples/true_sample_size_vs_power_100_000/chi_9_vs_exp_9.png)
 
 ###### [ALTERNATIVE] ChiSquare(9) vs GaussianMix
-![](examples/true_sample_size_vs_power/chi_9_vs_gaussian_mix.png)
+![](examples/true_sample_size_vs_power_100_000/chi_9_vs_gaussian_mix.png)
 
 ###### [NULL] Exp(9) vs Exp(9)
-![](examples/true_sample_size_vs_power/exp_9_vs_exp_9.png)
+![](examples/true_sample_size_vs_power_100_000/exp_9_vs_exp_9.png)
 
 ###### [ALTERNATIVE] Exp(9) vs GaussianMix
-![](examples/true_sample_size_vs_power/exp_9_vs_gaussian_mix.png)
+![](examples/true_sample_size_vs_power_100_000/exp_9_vs_gaussian_mix.png)
 
 ###### [NULL] GaussianMix vs GaussianMix
-![](examples/true_sample_size_vs_power/gaussian_mix_vs_gaussian_mix.png)
+![](examples/true_sample_size_vs_power_100_000/gaussian_mix_vs_gaussian_mix.png)
 
 ###### [NULL] Visual vs Visual
-![](examples/true_sample_size_vs_power/fmri_visual_vs_visual.png)
+![](examples/true_sample_size_vs_power_100_000/fmri_visual_vs_visual.png)
 
 ###### [NULL] NON-Visual vs NON-Visual
-![](examples/true_sample_size_vs_power/fmri_non_visual_vs_non_visual.png)
+![](examples/true_sample_size_vs_power_100_000/fmri_non_visual_vs_non_visual.png)
 
 ###### [ALTERNATIVE] Visual vs NON-Visual
-![](examples/true_sample_size_vs_power/fmri_visual_vs_non_visual.png)
+![](examples/true_sample_size_vs_power_100_000/fmri_visual_vs_non_visual.png)
