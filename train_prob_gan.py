@@ -21,11 +21,11 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # ========== Hyperparameters ==========
-NUM_TRAINING_STEPS = 10**5
+NUM_TRAINING_STEPS = 250000
 BATCH_SIZE = 16
 MODEL_DIMENSIONALITY = 64
 NOISE_SAMPLE_LENGTH = 64
-CRITIC_UPDATES_PER_GENERATOR_UPDATE = 1
+CRITIC_UPDATES_PER_GENERATOR_UPDATE = 5
 LAMBDA = 10
 
 description_f = open(args.output_dir + 'description.txt', 'w')

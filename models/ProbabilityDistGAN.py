@@ -27,15 +27,19 @@ class Generator(nn.Module):
     def forward(self, noise):
         out = self.fc_1(noise)
         out = F.leaky_relu(out, inplace=True)
+        out = F.dropout(out, p=0.5)
 
         out = self.fc_2(out)
         out = F.leaky_relu(out, inplace=True)
+        out = F.dropout(out, p=0.5)
 
         out = self.fc_3(out)
         out = F.leaky_relu(out, inplace=True)
+        out = F.dropout(out, p=0.5)
 
         out = self.fc_4(out)
         out = F.leaky_relu(out, inplace=True)
+        out = F.dropout(out, p=0.5)
 
         out = self.fc_5(out)
         return out
