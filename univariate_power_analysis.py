@@ -47,11 +47,11 @@ axes[1].axes.yaxis.set_visible(False)
 
 
 # Power calculation
-def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**2):
+def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=50):
     # Use boostrap technique to estimate the distribution of the
     #  p-value statistic
     two_sample_t_test_p_value_dist = []
-    mmd_test_stat_dist = []
+    mmd_rejections = []
     for br in range(k):
         d1_replicate = np.random.choice(d1, size=n_1, replace=True)
         d2_replicate = np.random.choice(d2, size=n_2, replace=True)
@@ -63,20 +63,19 @@ def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=10**2):
         # MMD statistic
         d1_replicate = np.expand_dims(d1_replicate, 1)
         d2_replicate = np.expand_dims(d2_replicate, 1)
-        mmd_stat = mmd(d1_replicate, d2_replicate)[1]
-        mmd_test_stat_dist.append(mmd_stat)
+        mmd_reject = mmd(d1_replicate, d2_replicate, sigma=None, alpha=alpha, k=100)
+        mmd_rejections.append(mmd_reject)
 
-    # Use monte carlo to estimate the power of a test with significance level 0.05
+    # Use monte carlo to estimate the power of a test with significance level of alpha
     #    => average number of p values less than alpha
-    #    => average number of MMD statistics greater than alpha
+    #    => average number of MMD rejections
     two_sample_t_test_power = np.mean([p < alpha for p in two_sample_t_test_p_value_dist])
-    mmd_test_power = np.mean([mmd_stat > alpha for mmd_stat in mmd_test_stat_dist])
-
+    mmd_test_power = np.mean(mmd_rejections)
     return two_sample_t_test_power, mmd_test_power
 
 
 # Compute power for various n
-n = np.linspace(2, 200, num=50)
+n = np.linspace(2, 100, num=25)
 
 t_test_power_for_n = []
 mmd_test_power_for_n = []

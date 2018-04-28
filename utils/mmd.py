@@ -1,6 +1,32 @@
 import math
 import numpy as np
 
+def mmd(X, Y, sigma=None, alpha=0.05, k=100):
+    # Compute MMD stat on original data split:
+    mmd_stat = mmd_test(X, Y, sigma=sigma)[1]
+
+    # Compute distribution of MMD stat via permutation test:
+    Z = np.concatenate((X, Y), axis=0)
+    mmd_permutations = np.zeros(k)
+
+    for k_i in range(k):
+        split_idx = X.shape[0]
+        X_k = Z[:split_idx]
+        Y_k = Z[split_idx:]
+
+        mmd_stat_k = mmd_test(X_k, Y_k, sigma=sigma)[1]
+        mmd_permutations[k_i] = mmd_stat_k
+
+        np.random.shuffle(Z)
+
+    # Reject the null if the MMD stat of original split
+    #  is significant under the distribution of the MMD statistic:
+    mmd_reject = False
+    if abs(mmd_stat) > abs(np.percentile(mmd_permutations, 1.0-alpha)):
+        mmd_reject = True
+
+    return mmd_reject
+
 
 def grbf(x1, x2, sigma):
     '''Calculates the Gaussian radial base function kernel'''
@@ -61,7 +87,7 @@ def kernelwidth(x1, x2):
     return sigma
 
 
-def mmd(x1, x2, sigma=None, verbose=False):
+def mmd_test(x1, x2, sigma=None, verbose=False):
     '''Calculates the unbiased mmd from two arrays x1 and x2
 
     sigma: the parameter for grbf. If None sigma is estimated
@@ -91,7 +117,6 @@ def mmd(x1, x2, sigma=None, verbose=False):
 
     # For unbiased estimator: subtract diagonal
     s = s - np.diag(s.diagonal())
-
     value = np.sum(s) / (m * (m - 1))
 
     return sigma, value

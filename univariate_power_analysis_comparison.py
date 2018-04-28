@@ -4,7 +4,7 @@ import shutil
 
 # =========== HYPERPARAMETERS ==========
 UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']
-NUM_SAMPLES = 25000
+NUM_SAMPLES = 100000
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'
@@ -91,13 +91,6 @@ def run_power_analyses():
 
             cmd = power_analysis_cmd(real_data_1_dir_i, real_data_2_dir_j, syn_data_1_dir_i, syn_data_2_dir_j, output_dir)
             run_cmd_sequence([cmd])
-
-def clear_output_dirs():
-    shutil.rmtree(MODELS_OUTPUT_DIR)
-    shutil.rmtree(SYN_DATA_OUTPUT_DIR)
-    shutil.rmtree(REAL_DATA_OUTPUT_DIR)
-    shutil.rmtree(POWER_DIR)
-
 
 # ========== MAIN ==========
 generate_real_data_samples()
