@@ -16,7 +16,7 @@ from utils.multiple_comparison import multivariate_power_calculation
 NUM_SAMPLES_AVAILABLE_TO_MODEL = np.geomspace(2, 250, num=2)
 NUM_MODELS_TO_TRAIN_PER_SAMPLE_SIZE = 3
 NUM_SYN_SAMPLES_TO_GENERATE = 25000
-MULTIVARIATE_DISTRIBUTIONS = ['m_gaussian_0_0', 'm_gaussian_01_01']
+MULTIVARIATE_DISTRIBUTIONS = ['m_gaussian_0_0', 'm_gaussian_1_1']
 
 # ========== OUTPUT DIRECTORIES ==========
 OUTPUT_DIR = 'OUTPUT/'

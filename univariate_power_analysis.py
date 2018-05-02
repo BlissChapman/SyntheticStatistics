@@ -1,5 +1,4 @@
 import argparse
-import matplotlib.pyplot as plt
 import numpy as np
 import os
 import shutil
@@ -32,19 +31,6 @@ np.random.shuffle(real_dataset_1)
 np.random.shuffle(real_dataset_2)
 np.random.shuffle(syn_dataset_1)
 np.random.shuffle(syn_dataset_2)
-
-# Plot datasets
-figure, axes = plt.subplots(nrows=3, ncols=1)
-axes[0].hist(real_dataset_1, fc=(14.0/255.0, 51.0/255.0, 134.0/255.0, 0.5))
-axes[0].hist(real_dataset_2, fc=(204.0/255.0, 52.0/255.0, 51.0/255.0, 0.5))
-axes[0].set_title('Real Distributions')
-axes[0].axes.yaxis.set_visible(False)
-
-axes[1].hist(syn_dataset_1, fc=(14.0/255.0, 51.0/255.0, 134.0/255.0, 0.5))
-axes[1].hist(syn_dataset_2, fc=(204.0/255.0, 52.0/255.0, 51.0/255.0, 0.5))
-axes[1].set_title('Synthetic Distributions')
-axes[1].axes.yaxis.set_visible(False)
-
 
 # Power calculation
 def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=50):
@@ -90,17 +76,15 @@ for i in range(len(n)):
     syn_t_test_power_for_n.append(t_syn)
     syn_mmd_test_power_for_n.append(mmd_syn)
 
-# Plot curve of n vs power
-axes[2].plot(n, t_test_power_for_n, label='T Test Real')
-axes[2].plot(n, syn_t_test_power_for_n, label='T Test Syn')
-axes[2].plot(n, mmd_test_power_for_n, label='MMD Test Real')
-axes[2].plot(n, syn_mmd_test_power_for_n, label='MMD Test Syn')
-axes[2].set_title('Sample Size vs Power')
-axes[2].set_xlabel('Sample Size')
-axes[2].set_ylabel('Power')
-axes[2].set_ylim([-0.1, 1.1])
-axes[2].legend(loc="upper right")
+# Save results to output dir
+n = np.array(n)
+t_test_real_power = np.array(t_test_power_for_n)
+mmd_test_real_power = np.array(mmd_test_power_for_n)
+t_test_syn_power = np.array(syn_t_test_power_for_n)
+mmd_test_syn_power = np.array(syn_mmd_test_power_for_n)
 
-# Save results
-figure.tight_layout()
-figure.savefig('{0}sample_size_vs_power.png'.format(args.output_dir))
+np.save(args.output_dir+'n', n)
+np.save(args.output_dir+'t_test_real_power', t_test_real_power)
+np.save(args.output_dir+'mmd_test_real_power', mmd_test_real_power)
+np.save(args.output_dir+'t_test_syn_power', t_test_syn_power)
+np.save(args.output_dir+'mmd_test_syn_power', mmd_test_syn_power)
