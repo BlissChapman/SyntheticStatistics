@@ -132,16 +132,16 @@ def visualize():
             mmd_test_syn_power = np.array(mmd_test_syn_power)
 
             # Plot curve of n vs power
-            sns.tsplot(data=t_test_real_power, time=n, ci=[95], color='blue', condition='Real', ax=axes[0])
-            sns.tsplot(data=t_test_syn_power, time=n, ci=[95], color='orange', condition='Synthetic', ax=axes[0])
+            sns.tsplot(data=t_test_real_power, time=n, ci=[68, 95], color='blue', condition='Real', ax=axes[0])
+            sns.tsplot(data=t_test_syn_power, time=n, ci=[68, 95], color='orange', condition='Synthetic', ax=axes[0])
             axes[0].set_title('Sample Size vs T Test Power')
             axes[0].set_xlabel('Sample Size')
             axes[0].set_ylabel('Power')
             axes[0].set_ylim([-0.1, 1.1])
             axes[0].legend(loc="upper right")
 
-            sns.tsplot(data=mmd_test_real_power, time=n, ci=[95], color='blue', condition='Real', ax=axes[1])
-            sns.tsplot(data=mmd_test_syn_power, time=n, ci=[95], color='orange', condition='Synthetic', ax=axes[1])
+            sns.tsplot(data=mmd_test_real_power, time=n, ci=[68, 95], color='blue', condition='Real', ax=axes[1])
+            sns.tsplot(data=mmd_test_syn_power, time=n, ci=[68, 95], color='orange', condition='Synthetic', ax=axes[1])
             axes[1].set_title('Sample Size vs MMD Test Power')
             axes[1].set_xlabel('Sample Size')
             axes[1].set_ylabel('Power')
