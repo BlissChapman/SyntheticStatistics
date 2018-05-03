@@ -3,6 +3,7 @@ RESULTS/*
 brainpedia/data/*
 brainpedia/syn_data/*
 brainpedia/cache/*
+brainpedia/syn_cache/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
