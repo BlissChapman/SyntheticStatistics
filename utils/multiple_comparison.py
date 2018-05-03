@@ -1,6 +1,9 @@
 import numpy as np
 
 from scipy.stats import ttest_ind
+from utils.freqopttest.data import TSTData
+from utils.freqopttest.kernel import KGauss
+from utils.freqopttest.tst import LinearMMDTest
 
 def rejecting_voxels(d1, d2, alpha=0.05):
     two_sample_t_test_p_vals_by_voxel = np.zeros(d1.shape[1:])
@@ -53,35 +56,48 @@ def rejection_mask_overlap(rejections, mask_rejections):
 
 def fmri_power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1):
     fdr_rejections = []
+    mmd_rejections = []
     percent_rejecting_voxels = []
     tp_ratios = []
     tn_ratios = []
     fp_ratios = []
     fn_ratios = []
 
+    # Initialize MMD test
+    mmd_kernel = KGauss(sigma2=1.0)
+    mmd = LinearMMDTest(kernel=mmd_kernel, alpha=alpha)
+
     for br in range(k):
         d1_idx = np.random.randint(low=0, high=d1.shape[0], size=n_1)
         d2_idx = np.random.randint(low=0, high=d2.shape[0], size=n_2)
-
         d1_replicate = d1[d1_idx].squeeze()
         d2_replicate = d2[d2_idx].squeeze()
 
+        # FDR
         fdr_reject_by_voxel = rejecting_voxels(d1_replicate, d2_replicate, alpha)
         flattened_fdr_reject_by_voxel = fdr_reject_by_voxel.flatten()
         fdr_reject = np.sum(flattened_fdr_reject_by_voxel) > 0  # reject if any voxel rejects
-        percent_reject = np.count_nonzero(flattened_fdr_reject_by_voxel) / flattened_fdr_reject_by_voxel.shape[0]
-
         fdr_rejections.append(fdr_reject)
-        percent_rejecting_voxels.append(percent_reject)
 
+        # MMD
+        d1_replicate = d1_replicate.reshape(d1_replicate.shape[0], -1)
+        d2_replicate = d2_replicate.reshape(d2_replicate.shape[0], -1)
+        tst_data = TSTData(d1_replicate, d2_replicate)
+        mmd_reject = mmd.perform_test(tst_data)['h0_rejected']
+        mmd_rejections.append(mmd_reject)
+
+        # Diagnostics
+        percent_reject = np.count_nonzero(flattened_fdr_reject_by_voxel) / flattened_fdr_reject_by_voxel.shape[0]
         tp, tn, fp, fn = rejection_mask_overlap(fdr_reject_by_voxel, overlap_mask)
+        percent_rejecting_voxels.append(percent_reject)
         tp_ratios.append(tp)
         tn_ratios.append(tn)
         fp_ratios.append(fp)
         fn_ratios.append(fn)
 
     fdr_power = np.mean(fdr_rejections)
-    return fdr_power, percent_rejecting_voxels, tp_ratios, tn_ratios, fp_ratios, fn_ratios
+    mmd_power = np.mean(mmd_rejections)
+    return fdr_power, mmd_power, percent_rejecting_voxels, tp_ratios, tn_ratios, fp_ratios, fn_ratios
 
 # Authors: Josef Pktd and example from H Raja and rewrite from Vincent Davis
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
