@@ -21,7 +21,7 @@ shutil.rmtree(args.output_dir, ignore_errors=True)
 os.makedirs(args.output_dir)
 
 # ========== Hyperparameters ==========
-NUM_TRAINING_STEPS = 20000
+NUM_TRAINING_STEPS = 50000
 BATCH_SIZE = 8
 MODEL_DIMENSIONALITY = 64
 NOISE_SAMPLE_LENGTH = 64
