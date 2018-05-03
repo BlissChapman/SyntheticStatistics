@@ -88,7 +88,7 @@ def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=50):
 
 
 # Compute power for various n
-n = np.linspace(10, 100, num=18)
+n = np.linspace(10, 5000, num=25)
 
 fdr_test_power_for_n = []
 mmd_test_power_for_n = []
