@@ -52,10 +52,10 @@ def chi_square_9(dataset_length):
 
 # ========== MULTIVARIATE DISTRIBUTIONS ==========
 def m_gaussian_0_0(dataset_length):
-    return np.random.multivariate_normal([0]*(10**2), np.identity((10**2)), size=(dataset_length))
+    return np.random.multivariate_normal([0]*(10), np.identity((10)), size=(dataset_length))
 
 def m_gaussian_1_1(dataset_length):
-    return np.random.multivariate_normal([1.0]*(10**2), np.identity((10**2)), size=(dataset_length))
+    return np.random.multivariate_normal([1.0]*(10), np.identity((10)), size=(dataset_length))
 
 
 # ========== NOISE ==========

@@ -1,31 +1,26 @@
 import math
 import numpy as np
 
-def mmd(X, Y, sigma=None, alpha=0.05, k=100):
+def mmd(X, Y, sigma=1.0, alpha=0.05, k=100):
     # Compute MMD stat on original data split:
-    mmd_stat = mmd_test(X, Y, sigma=sigma)[1]
+    _, mmd_stat = mmd_test(X, Y, sigma=sigma)
 
     # Compute distribution of MMD stat via permutation test:
     Z = np.concatenate((X, Y), axis=0)
     mmd_permutations = np.zeros(k)
 
     for k_i in range(k):
+        np.random.shuffle(Z)
         split_idx = X.shape[0]
         X_k = Z[:split_idx]
         Y_k = Z[split_idx:]
 
-        mmd_stat_k = mmd_test(X_k, Y_k, sigma=sigma)[1]
-        mmd_permutations[k_i] = mmd_stat_k
-
-        np.random.shuffle(Z)
+        mmd_permutations[k_i] = mmd_test(X_k, Y_k, sigma=sigma)[1]
 
     # Reject the null if the MMD stat of original split
     #  is significant under the distribution of the MMD statistic:
-    mmd_reject = False
-    if abs(mmd_stat) > abs(np.percentile(mmd_permutations, 1.0-alpha)):
-        mmd_reject = True
-
-    return mmd_reject
+    p_val = np.mean(mmd_stat <= mmd_permutations)
+    return p_val < alpha
 
 
 def grbf(x1, x2, sigma):
