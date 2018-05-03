@@ -19,13 +19,13 @@ POWER_OUTPUT_DIR = OUTPUT_DIR + 'POWER/'
 
 RESULTS_DIR = 'MULTIVARIATE_RESULTS/'
 
-# shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
-# os.makedirs(MODELS_OUTPUT_DIR)
-# os.makedirs(SYN_DATA_OUTPUT_DIR)
-# os.makedirs(REAL_DATA_OUTPUT_DIR)
-# os.makedirs(POWER_OUTPUT_DIR)
+shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
+os.makedirs(MODELS_OUTPUT_DIR)
+os.makedirs(SYN_DATA_OUTPUT_DIR)
+os.makedirs(REAL_DATA_OUTPUT_DIR)
+os.makedirs(POWER_OUTPUT_DIR)
 
-# os.makedirs(RESULTS_DIR)
+os.makedirs(RESULTS_DIR)
 
 # ========== RUN PIPELINE ==========
 def generate_real_cmd(dist, num_samples, output_dir):
@@ -153,8 +153,8 @@ def visualize():
             figure.savefig('{0}{1}_VS_{2}.png'.format(RESULTS_DIR, dist_i, dist_j))
 
 # ========== MAIN ==========
-# generate_real_data_samples()
-# train_gans()
-# generate_syn_data_samples()
+generate_real_data_samples()
+train_gans()
+generate_syn_data_samples()
 run_power_analyses()
 visualize()
