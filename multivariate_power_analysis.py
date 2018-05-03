@@ -3,9 +3,9 @@ import numpy as np
 import os
 import shutil
 
+from utils.freqopttest.data import TSTData
+from utils.freqopttest.kernel import KGauss
 from utils.freqopttest.tst import LinearMMDTest
-from utils.mmd import mmd
-from utils.multiple_comparison import multivariate_power_calculation
 from utils.sampling import *
 
 
@@ -33,11 +33,39 @@ np.random.shuffle(real_dataset_2)
 np.random.shuffle(syn_dataset_1)
 np.random.shuffle(syn_dataset_2)
 
-# Power calculation
+def fdr_t_test_power(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
+    fdr_rejections = []
+
+    for br in range(k):
+        d1_idx = np.random.randint(low=0, high=d1.shape[0], size=n_1)
+        d2_idx = np.random.randint(low=0, high=d2.shape[0], size=n_2)
+
+        d1_replicate = d1[d1_idx].squeeze()
+        d2_replicate = d2[d2_idx].squeeze()
+
+        # FDR corrected univariate tests
+        two_sample_t_test_p_vals_by_dim = np.zeros(d1.shape[1:])
+        for i in range(two_sample_t_test_p_vals_by_dim.shape[0]):
+            d1_vals = d1[:, i]
+            d2_vals = d2[:, i]
+            two_sample_t_test_p_vals_by_dim[i] = ttest_ind(d1_vals, d2_vals, equal_var=True).pvalue
+
+        fdr_reject_by_dim = fdr_correction(two_sample_t_test_p_vals_by_dim, alpha=alpha)[0]
+        fdr_reject = sum(fdr_reject_by_dim) > 0  # reject if any dim rejects
+        fdr_rejections.append(fdr_reject)
+
+    fdr_power = np.mean(fdr_rejections)
+    return fdr_power
+
 def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=50):
-    # Use boostrap technique to estimate the power of the MMD and
-    #  fdr corrected T-test
-    fdr_power_for_k = []
+    # FDR corrected T-test power
+    fdr_t_test_power = fdr_t_test_power(d1, d2, n_1, n_2, alpha=alpha, k=100)
+
+    # Initialize MMD test
+    mmd_kernel = KGauss(sigma2=1.0)
+    mmd = LinearMMDTest(kernel=mmd_kernel, alpha=alpha)
+
+    # Use boostrap technique to estimate the power of the MMD test
     mmd_rejections = []
     for br in range(k):
         d1_indices = np.arange(n_1)
@@ -48,18 +76,13 @@ def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=50):
         d1_replicate = d1[d1_replicate_indices]
         d2_replicate = d2[d2_replicate_indices]
 
-        # FDR corrected t-tests
-
-        fdr_power = multivariate_power_calculation(d1_replicate, d2_replicate, n_1, n_2, alpha=alpha, k=100)
-        fdr_power_for_k.append(fdr_power)
-
         # MMD statistic
-        mmd_reject = mmd(d1_replicate, d2_replicate, sigma=None, alpha=alpha, k=100)
+        tst_data = TSTData(d1_replicate, d2_replicate)
+        mmd_reject = mmd.perform_test(tst_data)['h0_rejected']
         mmd_rejections.append(mmd_reject)
 
-    fdr_test_power = np.mean(fdr_power_for_k)
     mmd_test_power = np.mean(mmd_rejections)
-    return fdr_test_power, mmd_test_power
+    return fdr_t_test_power, mmd_test_power
 
 
 # Compute power for various n
