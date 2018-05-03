@@ -5,6 +5,7 @@ from utils.freqopttest.data import TSTData
 from utils.freqopttest.kernel import KGauss
 from utils.freqopttest.tst import LinearMMDTest
 
+
 def rejecting_voxels(d1, d2, alpha=0.05):
     two_sample_t_test_p_vals_by_voxel = np.zeros(d1.shape[1:])
 

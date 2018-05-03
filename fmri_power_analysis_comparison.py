@@ -80,15 +80,16 @@ plotting.plot_glass_brain(real_dataset_2_img, threshold='auto', title="[REAL {0}
 plotting.plot_glass_brain(syn_dataset_2_img, threshold='auto', title="[SYN {0}]".format(args.dataset_2_label), axes=axes[3])
 
 # Compute statistical significance weights of each voxel in non-visual vs visual
+num_trials = 5
 k = 10
 real_rejecting_voxels_mask = bootstrap_rejecting_voxels_mask(real_dataset_1.squeeze(), real_dataset_2.squeeze(), k=k)
 
 # Compute power for various n
 n = np.linspace(5, 100, num=25)
-fdr_test_power_for_n = np.zeros((len(n)))
-syn_fdr_test_power_for_n = np.zeros((len(n)))
-mmd_test_power_for_n = np.zeros((len(n)))
-syn_mmd_test_power_for_n = np.zeros((len(n)))
+fdr_test_power_for_n = np.zeros((len(n), num_trials))
+syn_fdr_test_power_for_n = np.zeros((len(n), num_trials))
+mmd_test_power_for_n = np.zeros((len(n), num_trials))
+syn_mmd_test_power_for_n = np.zeros((len(n), num_trials))
 
 percent_rejecting_voxels_syn_for_n = np.zeros((len(n), k))
 percent_rejecting_voxels_real_for_n = np.zeros((len(n), k))
@@ -110,13 +111,14 @@ for i in range(len(n)):
     syn_n = int(n[i])
     real_n = min(real_dataset_1.shape[0], int(n[i]))
 
-    fdr_real_power, mmd_power, percent_rejecting_voxels_real, wtp_real, wtn_real, wfp_real, wfn_real = fmri_power_calculations(real_dataset_1, real_dataset_2, real_n, real_n, real_rejecting_voxels_mask, k=k)
-    fdr_syn_power, mmd_syn_power, percent_rejecting_voxels_syn, wtp_syn, wtn_syn, wfp_syn, wfn_syn = fmri_power_calculations(syn_dataset_1, syn_dataset_2, syn_n, syn_n, real_rejecting_voxels_mask, k=k)
+    for t in range(num_trials):
+        fdr_real_power, mmd_power, percent_rejecting_voxels_real, wtp_real, wtn_real, wfp_real, wfn_real = fmri_power_calculations(real_dataset_1, real_dataset_2, real_n, real_n, real_rejecting_voxels_mask, k=k)
+        fdr_syn_power, mmd_syn_power, percent_rejecting_voxels_syn, wtp_syn, wtn_syn, wfp_syn, wfn_syn = fmri_power_calculations(syn_dataset_1, syn_dataset_2, syn_n, syn_n, real_rejecting_voxels_mask, k=k)
 
-    fdr_test_power_for_n[i] = fdr_real_power
-    syn_fdr_test_power_for_n[i] = fdr_syn_power
-    mmd_test_power_for_n[i] = mmd_power
-    syn_mmd_test_power_for_n[i] = mmd_syn_power
+        fdr_test_power_for_n[i][t] = fdr_real_power
+        syn_fdr_test_power_for_n[i][t] = fdr_syn_power
+        mmd_test_power_for_n[i][t] = mmd_power
+        syn_mmd_test_power_for_n[i][t] = mmd_syn_power
 
     percent_rejecting_voxels_syn_for_n[i][:] = percent_rejecting_voxels_syn
     percent_rejecting_voxels_real_for_n[i][:] = percent_rejecting_voxels_real
