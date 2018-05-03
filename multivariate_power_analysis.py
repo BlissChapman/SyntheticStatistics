@@ -3,9 +3,11 @@ import numpy as np
 import os
 import shutil
 
+from scipy.stats import ttest_ind
 from utils.freqopttest.data import TSTData
 from utils.freqopttest.kernel import KGauss
 from utils.freqopttest.tst import LinearMMDTest
+from utils.multiple_comparison import fdr_correction
 from utils.sampling import *
 
 
@@ -59,7 +61,7 @@ def fdr_t_test_power(d1, d2, n_1, n_2, alpha=0.05, k=10**1):
 
 def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=50):
     # FDR corrected T-test power
-    fdr_t_test_power = fdr_t_test_power(d1, d2, n_1, n_2, alpha=alpha, k=100)
+    fdr_power = fdr_t_test_power(d1, d2, n_1, n_2, alpha=alpha, k=k)
 
     # Initialize MMD test
     mmd_kernel = KGauss(sigma2=1.0)
@@ -82,7 +84,7 @@ def power_calculations(d1, d2, n_1, n_2, alpha=0.05, k=50):
         mmd_rejections.append(mmd_reject)
 
     mmd_test_power = np.mean(mmd_rejections)
-    return fdr_t_test_power, mmd_test_power
+    return fdr_power, mmd_test_power
 
 
 # Compute power for various n
