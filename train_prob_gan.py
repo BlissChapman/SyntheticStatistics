@@ -96,32 +96,6 @@ for training_step in range(0, NUM_TRAINING_STEPS):
     critic_output = critic(synthetic_data_batch)
     _ = generator.train(critic_output)
 
-    if training_step % 10000 == 0:
-        sample_size = 25000
-        generator_noise_sample = Variable(uniform_noise(NOISE_SAMPLE_LENGTH, sample_size, CUDA))
-        synthetic_data_sample = generator(generator_noise_sample)
-        real_data_sample_indices = np.random.choice(real_data.shape[0], size=sample_size, replace=False)
-        real_data_sample = real_data[real_data_sample_indices]
-
-        real_means = np.mean(real_data_sample, axis=0)
-        syn_means = np.mean(synthetic_data_sample.data.numpy(), axis=0)
-        means_norm = np.linalg.norm(real_means - syn_means, ord=2, axis=0)
-
-        real_var = np.var(real_data_sample, axis=0)
-        syn_var = np.var(synthetic_data_sample.data.numpy(), axis=0)
-        var_norm = np.linalg.norm(real_var - syn_var, ord=2, axis=0)
-
-        print("REAL MEANS: ", real_means)
-        print("SYN MEANS : ", syn_means)
-        print("TWO NORM  :", means_norm)
-        print("REAL DATA VS REAL DATA TWO NORM: ", 0.008555364317674672)
-        print()
-        print("REAL VARIANCES: ", real_var)
-        print("SYN VARIANCES : ", syn_var)
-        print("TWO NORM  :", var_norm)
-        print("REAL DATA VS REAL DATA TWO NORM: ", 0.013229529657423135)
-        print("===================================")
-
 # Save models
 torch.save(generator.state_dict(), "{0}generator".format(args.output_dir))
 torch.save(critic.state_dict(), "{0}critic".format(args.output_dir))
