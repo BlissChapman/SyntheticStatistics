@@ -13,8 +13,8 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
 
         self.fc_1 = nn.Linear(input_width, dimensionality)
-        self.fc_2 = nn.Linear(dimensionality, dimensionality)
-        self.fc_3 = nn.Linear(dimensionality, dimensionality)
+        # self.fc_2 = nn.Linear(dimensionality, dimensionality)
+        # self.fc_3 = nn.Linear(dimensionality, dimensionality)
         self.fc_4 = nn.Linear(dimensionality, dimensionality)
         self.fc_5 = nn.Linear(dimensionality, output_width)
 
@@ -29,13 +29,13 @@ class Generator(nn.Module):
         out = F.leaky_relu(out, inplace=True)
         out = F.dropout(out, p=0.5)
 
-        out = self.fc_2(out)
-        out = F.leaky_relu(out, inplace=True)
-        out = F.dropout(out, p=0.5)
-
-        out = self.fc_3(out)
-        out = F.leaky_relu(out, inplace=True)
-        out = F.dropout(out, p=0.5)
+        # out = self.fc_2(out)
+        # out = F.leaky_relu(out, inplace=True)
+        # out = F.dropout(out, p=0.5)
+        #
+        # out = self.fc_3(out)
+        # out = F.leaky_relu(out, inplace=True)
+        # out = F.dropout(out, p=0.5)
 
         out = self.fc_4(out)
         out = F.leaky_relu(out, inplace=True)
@@ -60,8 +60,8 @@ class Critic(nn.Module):
         super(Critic, self).__init__()
 
         self.fc_1 = nn.Linear(input_width, dimensionality)
-        self.fc_2 = nn.Linear(dimensionality, dimensionality)
-        self.fc_3 = nn.Linear(dimensionality, dimensionality)
+        # self.fc_2 = nn.Linear(dimensionality, dimensionality)
+        # self.fc_3 = nn.Linear(dimensionality, dimensionality)
         self.fc_4 = nn.Linear(dimensionality, dimensionality)
         self.fc_5 = nn.Linear(dimensionality, 1)
 
@@ -75,11 +75,11 @@ class Critic(nn.Module):
         out = self.fc_1(data)
         out = F.leaky_relu(out, inplace=True)
 
-        out = self.fc_2(out)
-        out = F.leaky_relu(out, inplace=True)
-
-        out = self.fc_3(out)
-        out = F.leaky_relu(out, inplace=True)
+        # out = self.fc_2(out)
+        # out = F.leaky_relu(out, inplace=True)
+        #
+        # out = self.fc_3(out)
+        # out = F.leaky_relu(out, inplace=True)
 
         out = self.fc_4(out)
         out = F.leaky_relu(out, inplace=True)

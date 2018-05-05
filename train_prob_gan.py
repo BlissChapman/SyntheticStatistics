@@ -22,7 +22,7 @@ os.makedirs(args.output_dir)
 
 # ========== Hyperparameters ==========
 NUM_TRAINING_STEPS = 200000
-BATCH_SIZE = 32
+BATCH_SIZE = 64
 MODEL_DIMENSIONALITY = 64
 NOISE_SAMPLE_LENGTH = 64
 CRITIC_UPDATES_PER_GENERATOR_UPDATE = 5
