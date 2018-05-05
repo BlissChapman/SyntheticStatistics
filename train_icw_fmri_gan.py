@@ -21,7 +21,6 @@ from utils.plot import Plot
 parser = argparse.ArgumentParser(description="Train ICW_FMRI_GAN.")
 parser.add_argument('train_data_dir', help='the directory containing real fMRI data to train on')
 parser.add_argument('train_data_dir_cache', help='the directory to use as a cache for the train_data_dir preprocessing')
-parser.add_argument('num_training_samples', type=int, help='the number of samples to use when training the ICW_FMRI_GAN')
 parser.add_argument('output_dir', help='the directory to save training results')
 args = parser.parse_args()
 
@@ -32,8 +31,8 @@ os.makedirs(args.output_dir)
 # ========== Hyperparameters ==========
 DOWNSAMPLE_SCALE = 0.25
 MULTI_TAG_LABEL_ENCODING = False
-TRAINING_STEPS = 100000
-BATCH_SIZE = 1
+TRAINING_STEPS = 200000
+BATCH_SIZE = 50
 MODEL_DIMENSIONALITY = 64
 CONDITONING_DIMENSIONALITY = 5
 CRITIC_UPDATES_PER_GENERATOR_UPDATE = 1
@@ -54,10 +53,6 @@ brainpedia = Brainpedia(data_dirs=[args.train_data_dir],
                         scale=DOWNSAMPLE_SCALE,
                         multi_tag_label_encoding=MULTI_TAG_LABEL_ENCODING)
 all_brain_data, all_brain_data_tags = brainpedia.all_data()
-
-sample_idx = np.random.choice(np.arange(all_brain_data.shape[0]), args.num_training_samples, replace=False)
-all_brain_data = all_brain_data[sample_idx]
-all_brain_data_tags = all_brain_data_tags[sample_idx]
 
 brainpedia_generator = Brainpedia.batch_generator(all_brain_data, all_brain_data_tags, BATCH_SIZE, CUDA)
 brain_data_shape, brain_data_tag_shape = brainpedia.sample_shapes()
