@@ -87,6 +87,11 @@ for training_step in range(1, TRAINING_STEPS + 1):
     critic_output = critic(synthetic_brain_img_data_batch, labels_batch)
     _ = generator.train(critic_output)
 
+    if training_step % 10000 == 0:
+        # Save model at checkpoint
+        torch.save(generator.state_dict(), "{0}generator".format(args.output_dir))
+        torch.save(critic.state_dict(), "{0}critic".format(args.output_dir))
+        
 # Save model at checkpoint
 torch.save(generator.state_dict(), "{0}generator".format(args.output_dir))
 torch.save(critic.state_dict(), "{0}critic".format(args.output_dir))
