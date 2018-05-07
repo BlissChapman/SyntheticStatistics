@@ -30,7 +30,7 @@ os.makedirs(args.output_dir)
 
 # ========== Hyperparameters ==========
 DOWNSAMPLE_SCALE = 0.25
-MULTI_TAG_LABEL_ENCODING = False
+MULTI_TAG_LABEL_ENCODING = True
 TRAINING_STEPS = 200000
 BATCH_SIZE = 50
 MODEL_DIMENSIONALITY = 64
