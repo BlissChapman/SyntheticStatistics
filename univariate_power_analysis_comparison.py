@@ -6,12 +6,12 @@ import shutil
 
 
 # =========== HYPERPARAMETERS ==========
-UNIVARIATE_DISTRIBUTIONS = ['gaussian_0', 'gaussian_1', 'chi_square_9', 'exp_9', 'gaussian_mixture']
+UNIVARIATE_DISTRIBUTIONS = ['chi_square_9', 'exp_9']
 NUM_SAMPLES = 20000
 NUM_TRIALS = 5
 
 # ========== OUTPUT DIRECTORIES ==========
-OUTPUT_DIR = 'OUTPUT/'
+OUTPUT_DIR = 'examples/power_analyses/univariate_output/'
 MODELS_OUTPUT_DIR = OUTPUT_DIR + 'MODELS/'
 SYN_DATA_OUTPUT_DIR = OUTPUT_DIR + 'SYN_DATA/'
 REAL_DATA_OUTPUT_DIR = OUTPUT_DIR + 'REAL_DATA/'
@@ -19,11 +19,11 @@ POWER_OUTPUT_DIR = OUTPUT_DIR + 'POWER/'
 
 RESULTS_DIR = 'RESULTS/'
 
-shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
-os.makedirs(MODELS_OUTPUT_DIR)
-os.makedirs(SYN_DATA_OUTPUT_DIR)
-os.makedirs(REAL_DATA_OUTPUT_DIR)
-os.makedirs(POWER_OUTPUT_DIR)
+# shutil.rmtree(OUTPUT_DIR, ignore_errors=True)
+# os.makedirs(MODELS_OUTPUT_DIR)
+# os.makedirs(SYN_DATA_OUTPUT_DIR)
+# os.makedirs(REAL_DATA_OUTPUT_DIR)
+# os.makedirs(POWER_OUTPUT_DIR)
 
 os.makedirs(RESULTS_DIR)
 
@@ -105,7 +105,7 @@ def run_power_analyses():
 def visualize():
     for i in range(len(UNIVARIATE_DISTRIBUTIONS)):
         for j in range(i, len(UNIVARIATE_DISTRIBUTIONS)):
-            figure, axes = plt.subplots(nrows=2, ncols=1)
+            figure, axes = plt.subplots(nrows=1, ncols=1)
 
             n = None
             t_test_real_power = []
@@ -132,30 +132,30 @@ def visualize():
             mmd_test_syn_power = np.array(mmd_test_syn_power)
 
             # Plot curve of n vs power
-            sns.tsplot(data=t_test_real_power, time=n, ci=[68, 95], color='blue', condition='Real', ax=axes[0])
-            sns.tsplot(data=t_test_syn_power, time=n, ci=[68, 95], color='orange', condition='Synthetic', ax=axes[0])
-            axes[0].set_title('Sample Size vs T Test Power')
-            axes[0].set_xlabel('Sample Size')
-            axes[0].set_ylabel('Power')
-            axes[0].set_ylim([-0.1, 1.1])
-            axes[0].legend(loc="upper right")
+            # sns.tsplot(data=t_test_real_power, time=n, ci=[68, 95], color='blue', condition='Real', ax=axes[0])
+            # sns.tsplot(data=t_test_syn_power, time=n, ci=[68, 95], color='orange', condition='Synthetic', ax=axes[0])
+            # axes[0].set_title('Sample Size vs T Test Power')
+            # axes[0].set_xlabel('Sample Size')
+            # axes[0].set_ylabel('Power')
+            # axes[0].set_ylim([-0.1, 1.1])
+            # axes[0].legend(loc="upper right")
 
-            sns.tsplot(data=mmd_test_real_power, time=n, ci=[68, 95], color='blue', condition='Real', ax=axes[1])
-            sns.tsplot(data=mmd_test_syn_power, time=n, ci=[68, 95], color='orange', condition='Synthetic', ax=axes[1])
-            axes[1].set_title('Sample Size vs MMD Test Power')
-            axes[1].set_xlabel('Sample Size')
-            axes[1].set_ylabel('Power')
-            axes[1].set_ylim([-0.1, 1.1])
-            axes[1].legend(loc="upper right")
+            sns.tsplot(data=mmd_test_real_power, time=n, ci=[68, 95], color='blue', condition='Real', ax=axes)
+            sns.tsplot(data=mmd_test_syn_power, time=n, ci=[68, 95], color='orange', condition='Synthetic', ax=axes)
+            axes.set_title('Sample Size vs MMD Test Power')
+            axes.set_xlabel('Sample Size')
+            axes.set_ylabel('Power')
+            axes.set_ylim([-0.1, 1.1])
+            axes.legend(loc="upper right")
 
             # Save results
             figure.tight_layout()
-            figure.savefig('{0}{1}_VS_{2}.png'.format(RESULTS_DIR, dist_i, dist_j))
+            figure.savefig('{0}{1}_VS_{2}'.format(RESULTS_DIR, dist_i, dist_j), format='eps')
 
 
 # ========== MAIN ==========
-generate_real_data_samples()
-train_gans()
-generate_syn_data_samples()
-run_power_analyses()
+# generate_real_data_samples()
+# train_gans()
+# generate_syn_data_samples()
+# run_power_analyses()
 visualize()
