@@ -112,6 +112,7 @@ def visualize():
             mmd_test_real_power = []
             fdr_test_syn_power = []
             mmd_test_syn_power = []
+            mmd_conservative_test_syn_power = []
 
             for k in range(NUM_TRIALS):
                 dist_i = MULTIVARIATE_DISTRIBUTIONS[i]
@@ -124,12 +125,14 @@ def visualize():
                 mmd_test_real_power.append(np.load(power_dir_k+'mmd_test_real_power.npy'))
                 fdr_test_syn_power.append(np.load(power_dir_k+'fdr_test_syn_power.npy'))
                 mmd_test_syn_power.append(np.load(power_dir_k+'mmd_test_syn_power.npy'))
+                mmd_conservative_test_syn_power.append(np.load(power_dir_k+'mmd_conservative_test_syn_power.npy'))
 
             n = np.array(n)
             t_test_real_power = np.array(fdr_test_real_power)
             mmd_test_real_power = np.array(mmd_test_real_power)
             t_test_syn_power = np.array(fdr_test_syn_power)
             mmd_test_syn_power = np.array(mmd_test_syn_power)
+            mmd_conservative_test_syn_power = np.array(mmd_conservative_test_syn_power)
 
             # Plot curve of n vs power
             sns.tsplot(data=fdr_test_real_power, time=n, ci=[68, 95], color='blue', condition='Real', ax=axes[0])
@@ -142,6 +145,7 @@ def visualize():
 
             sns.tsplot(data=mmd_test_real_power, time=n, ci=[68, 95], color='blue', condition='Real', ax=axes[1])
             sns.tsplot(data=mmd_test_syn_power, time=n, ci=[68, 95], color='orange', condition='Synthetic', ax=axes[1])
+            sns.tsplot(data=mmd_conservative_test_syn_power, time=n, ci=[68, 95], color='red', condition='Syn Conservative', ax=axes[1])
             axes[1].set_title('Sample Size vs MMD Test Power')
             axes[1].set_xlabel('Sample Size')
             axes[1].set_ylabel('Power')

@@ -5,6 +5,19 @@ from utils.freqopttest.data import TSTData
 from utils.freqopttest.kernel import KGauss
 from utils.freqopttest.tst import LinearMMDTest
 
+def conservative_mmd(p, q, conservative_adjustment, alpha):
+    # Initialize MMD test
+    mmd_kernel = KGauss(sigma2=1.0)
+    mmd = LinearMMDTest(kernel=mmd_kernel, alpha=alpha)
+
+    # Perform MMD test
+    pq = mmd.perform_test(TSTData(p, q))['pvalue']
+    if np.isnan(pq):
+        pq = 1.0
+
+    conservative_p_value = pq + conservative_adjustment
+    reject = conservative_p_value < alpha
+    return reject
 
 def rejecting_voxels(d1, d2, alpha=0.05):
     two_sample_t_test_p_vals_by_voxel = np.zeros(d1.shape[1:])
