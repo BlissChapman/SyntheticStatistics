@@ -148,7 +148,7 @@ for i in range(len(n)):
     print("PERCENT COMPLETE: {0:.2f}%\r".format(100 * float(i+1) / float(len(n))), end='')
 
 # Calculate Beta value for every trial and every sample size
-def compute_beta(real_pvals, syn_pvals, alpha=0.05, k=10):
+def compute_beta(real_pvals, syn_pvals, alpha=0.05, k=50):
     l = 0.0
     h = 1.0
 
@@ -181,7 +181,7 @@ mmd_beta = compute_beta(mmd_test_p_values_for_n, syn_mmd_test_p_values_for_n)
 sns.tsplot(data=fdr_test_power_for_n.T, time=n, ci=[68, 95], color='blue', condition='REAL', ax=axes[4])
 sns.tsplot(data=syn_fdr_test_power_for_n.T, time=n, ci=[68, 95], color='orange', condition='SYN', ax=axes[4])
 axes[4].set_title('Sample Size vs FDR Corrected T Test Power')
-axes[4].set_xlabel('Sample Size, Beta = {0:.2f}'.format(fdr_beta))
+axes[4].set_xlabel('Sample Size, Beta = {0:.4f}'.format(fdr_beta))
 axes[4].set_ylabel('Power')
 axes[4].set_ylim([-0.1, 1.1])
 axes[4].legend(loc="upper right")
@@ -190,7 +190,7 @@ axes[4].legend(loc="upper right")
 sns.tsplot(data=mmd_test_power_for_n.T, time=n, ci=[68, 95], color='blue', condition='REAL', ax=axes[5])
 sns.tsplot(data=syn_mmd_test_power_for_n.T, time=n, ci=[68, 95], color='orange', condition='SYN', ax=axes[5])
 axes[5].set_title('Sample Size vs MMD Test Power')
-axes[5].set_xlabel('Sample Size, Beta = {0:.2f}'.format(mmd_beta))
+axes[5].set_xlabel('Sample Size, Beta = {0:.4f}'.format(mmd_beta))
 axes[5].set_ylabel('Power')
 axes[5].set_ylim([-0.1, 1.1])
 axes[5].legend(loc="upper right")
