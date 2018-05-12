@@ -114,11 +114,9 @@ def fmri_power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1)
         fp_ratios.append(fp)
         fn_ratios.append(fn)
 
-    fdr_p_val = np.mean(fdr_p_vals)
-    mmd_p_val = np.mean(mmd_p_vals)
     fdr_power = np.mean(fdr_rejections)
     mmd_power = np.mean(mmd_rejections)
-    return fdr_p_val, mmd_p_val, fdr_power, mmd_power, percent_rejecting_voxels, tp_ratios, tn_ratios, fp_ratios, fn_ratios
+    return fdr_p_vals, mmd_p_vals, fdr_power, mmd_power, percent_rejecting_voxels, tp_ratios, tn_ratios, fp_ratios, fn_ratios
 
 # Authors: Josef Pktd and example from H Raja and rewrite from Vincent Davis
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>

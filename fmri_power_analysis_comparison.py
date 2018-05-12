@@ -88,10 +88,10 @@ real_rejecting_voxels_mask = bootstrap_rejecting_voxels_mask(real_dataset_1.sque
 
 # Compute power for various n
 n = np.linspace(10, 100, num=25)
-fdr_test_p_values_for_n = np.zeros((len(n), num_trials))
-syn_fdr_test_p_values_for_n = np.zeros((len(n), num_trials))
-mmd_test_p_values_for_n = np.zeros((len(n), num_trials))
-syn_mmd_test_p_values_for_n = np.zeros((len(n), num_trials))
+fdr_test_p_values_for_n = np.zeros((len(n), num_trials, k))
+syn_fdr_test_p_values_for_n = np.zeros((len(n), num_trials, k))
+mmd_test_p_values_for_n = np.zeros((len(n), num_trials, k))
+syn_mmd_test_p_values_for_n = np.zeros((len(n), num_trials, k))
 
 fdr_test_power_for_n = np.zeros((len(n), num_trials))
 syn_fdr_test_power_for_n = np.zeros((len(n), num_trials))
@@ -122,10 +122,10 @@ for i in range(len(n)):
         fdr_real_p_val, mmd_p_val, fdr_real_power, mmd_power, percent_rejecting_voxels_real, wtp_real, wtn_real, wfp_real, wfn_real = fmri_power_calculations(real_dataset_1, real_dataset_2, real_n, real_n, real_rejecting_voxels_mask, k=k)
         fdr_syn_p_val, mmd_syn_p_val, fdr_syn_power, mmd_syn_power, percent_rejecting_voxels_syn, wtp_syn, wtn_syn, wfp_syn, wfn_syn = fmri_power_calculations(syn_dataset_1, syn_dataset_2, syn_n, syn_n, real_rejecting_voxels_mask, k=k)
 
-        fdr_test_p_values_for_n[i][t] = fdr_real_p_val
-        syn_fdr_test_p_values_for_n[i][t] = fdr_syn_p_val
-        mmd_test_p_values_for_n[i][t] = mmd_p_val
-        syn_mmd_test_p_values_for_n[i][t] = mmd_syn_p_val
+        fdr_test_p_values_for_n[i][t][:] = fdr_real_p_val[:]
+        syn_fdr_test_p_values_for_n[i][t][:] = fdr_syn_p_val[:]
+        mmd_test_p_values_for_n[i][t][:] = mmd_p_val[:]
+        syn_mmd_test_p_values_for_n[i][t][:] = mmd_syn_p_val[:]
 
         fdr_test_power_for_n[i][t] = fdr_real_power
         syn_fdr_test_power_for_n[i][t] = fdr_syn_power
@@ -157,10 +157,11 @@ def compute_beta(real_pvals, syn_pvals, alpha=0.05, k=50):
 
         syn_reject_too_often = False
         for n in range(real_pvals.shape[0]):
-            avg_real_rejection = np.mean(real_pvals[n] < alpha)
-            avg_syn_rejection = np.mean(syn_pvals[n] + beta < alpha)
-            if avg_syn_rejection > avg_real_rejection:
-                syn_reject_too_often = True
+            for trial in range(real_pvals.shape[1]):
+                avg_real_rejection = np.mean(real_pvals[n][trial] < alpha)
+                avg_syn_rejection = np.mean(syn_pvals[n][trial] + beta < alpha)
+                if avg_syn_rejection > avg_real_rejection:
+                    syn_reject_too_often = True
 
         if syn_reject_too_often:
             l = beta
@@ -169,17 +170,20 @@ def compute_beta(real_pvals, syn_pvals, alpha=0.05, k=50):
 
     return beta
 
-fdr_test_p_values_for_n = np.zeros((len(n), num_trials))
-syn_fdr_test_p_values_for_n = np.zeros((len(n), num_trials))
-mmd_test_p_values_for_n = np.zeros((len(n), num_trials))
-syn_mmd_test_p_values_for_n = np.zeros((len(n), num_trials))
-
 fdr_beta = compute_beta(fdr_test_p_values_for_n, syn_fdr_test_p_values_for_n)
 mmd_beta = compute_beta(mmd_test_p_values_for_n, syn_mmd_test_p_values_for_n)
+
+#((len(n), num_trials, k))
+conservative_syn_fdr_test_p_values_for_n = np.copy(syn_fdr_test_p_values_for_n) + fdr_beta
+conservative_syn_fdr_test_power = np.mean(conservative_syn_fdr_test_p_values_for_n < 0.05, axis=2)
+
+conservative_syn_mmd_test_p_values_for_n = np.copy(syn_mmd_test_p_values_for_n) + mmd_beta
+conservative_syn_mmd_test_power = np.mean(conservative_syn_mmd_test_p_values_for_n < 0.05, axis=2)
 
 # Plot curve of n vs FDR corrected t test power
 sns.tsplot(data=fdr_test_power_for_n.T, time=n, ci=[68, 95], color='blue', condition='REAL', ax=axes[4])
 sns.tsplot(data=syn_fdr_test_power_for_n.T, time=n, ci=[68, 95], color='orange', condition='SYN', ax=axes[4])
+sns.tsplot(data=conservative_syn_fdr_test_power.T, time=n, ci=[68, 95], color='green', condition='SYN CONSERVATIVE', ax=axes[4])
 axes[4].set_title('Sample Size vs FDR Corrected T Test Power')
 axes[4].set_xlabel('Sample Size, Beta = {0:.4f}'.format(fdr_beta))
 axes[4].set_ylabel('Power')
@@ -189,6 +193,7 @@ axes[4].legend(loc="upper right")
 # Plot curve of n vs MMD test power
 sns.tsplot(data=mmd_test_power_for_n.T, time=n, ci=[68, 95], color='blue', condition='REAL', ax=axes[5])
 sns.tsplot(data=syn_mmd_test_power_for_n.T, time=n, ci=[68, 95], color='orange', condition='SYN', ax=axes[5])
+sns.tsplot(data=conservative_syn_mmd_test_power.T, time=n, ci=[68, 95], color='green', condition='SYN CONSERVATIVE', ax=axes[5])
 axes[5].set_title('Sample Size vs MMD Test Power')
 axes[5].set_xlabel('Sample Size, Beta = {0:.4f}'.format(mmd_beta))
 axes[5].set_ylabel('Power')
