@@ -29,7 +29,7 @@ def rejecting_voxels(d1, d2, alpha=0.05):
                 d2_voxels = d2[:, i, j, k]
                 two_sample_t_test_p_vals_by_voxel[i][j][k] = ttest_ind(d1_voxels, d2_voxels, equal_var=True).pvalue
 
-    return fdr_correction(two_sample_t_test_p_vals_by_voxel, alpha=alpha)[0]
+    return fdr_correction(two_sample_t_test_p_vals_by_voxel, alpha=alpha)
 
 def bootstrap_rejecting_voxels_mask(d1, d2, k=10**1, alpha=0.05):
     fdr_reject_by_voxel_boot = []
@@ -41,7 +41,7 @@ def bootstrap_rejecting_voxels_mask(d1, d2, k=10**1, alpha=0.05):
         d1_replicate = d1[d1_idx].squeeze()
         d2_replicate = d2[d2_idx].squeeze()
 
-        fdr_reject_by_voxel = rejecting_voxels(d1_replicate, d2_replicate, alpha)
+        fdr_reject_by_voxel = rejecting_voxels(d1_replicate, d2_replicate, alpha)[0]
         fdr_reject_by_voxel_boot.append(fdr_reject_by_voxel)
 
     return np.mean(fdr_reject_by_voxel_boot, axis=0)
@@ -69,6 +69,8 @@ def rejection_mask_overlap(rejections, mask_rejections):
     return tp, tn, fp, fn
 
 def fmri_power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1):
+    fdr_p_vals = []
+    mmd_p_vals = []
     fdr_rejections = []
     mmd_rejections = []
     percent_rejecting_voxels = []
@@ -88,17 +90,20 @@ def fmri_power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1)
         d2_replicate = d2[d2_idx].squeeze()
 
         # FDR
-        fdr_reject_by_voxel = rejecting_voxels(d1_replicate, d2_replicate, alpha)
+        fdr_reject_by_voxel, fdr_corrected_p_vals_by_voxel = rejecting_voxels(d1_replicate, d2_replicate, alpha)
         flattened_fdr_reject_by_voxel = fdr_reject_by_voxel.flatten()
         fdr_reject = np.sum(flattened_fdr_reject_by_voxel) > 0  # reject if any voxel rejects
+        fdr_p_val = np.min(fdr_corrected_p_vals_by_voxel.flatten())
+        fdr_p_vals.append(fdr_p_val)
         fdr_rejections.append(fdr_reject)
 
         # MMD
         d1_replicate = d1_replicate.reshape(d1_replicate.shape[0], -1)
         d2_replicate = d2_replicate.reshape(d2_replicate.shape[0], -1)
         tst_data = TSTData(d1_replicate, d2_replicate)
-        mmd_reject = mmd.perform_test(tst_data)['h0_rejected']
-        mmd_rejections.append(mmd_reject)
+        mmd_tst = mmd.perform_test(tst_data)
+        mmd_p_vals.append(mmd_tst['pvalue'])
+        mmd_rejections.append(mmd_tst['h0_rejected'])
 
         # Diagnostics
         percent_reject = np.count_nonzero(flattened_fdr_reject_by_voxel) / flattened_fdr_reject_by_voxel.shape[0]
@@ -109,9 +114,11 @@ def fmri_power_calculations(d1, d2, n_1, n_2, overlap_mask, alpha=0.05, k=10**1)
         fp_ratios.append(fp)
         fn_ratios.append(fn)
 
+    fdr_p_val = np.mean(fdr_p_vals)
+    mmd_p_val = np.mean(mmd_p_vals)
     fdr_power = np.mean(fdr_rejections)
     mmd_power = np.mean(mmd_rejections)
-    return fdr_power, mmd_power, percent_rejecting_voxels, tp_ratios, tn_ratios, fp_ratios, fn_ratios
+    return fdr_p_val, mmd_p_val, fdr_power, mmd_power, percent_rejecting_voxels, tp_ratios, tn_ratios, fp_ratios, fn_ratios
 
 # Authors: Josef Pktd and example from H Raja and rewrite from Vincent Davis
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>

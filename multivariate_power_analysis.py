@@ -115,7 +115,7 @@ SYN = np.concatenate((syn_dataset_1, syn_dataset_2))
 REAL_SYN_AVG_PVAL = avg_p_val(REAL, SYN)
 
 conservative_adjustment = real_dataset_1_null_pval + real_dataset_2_null_pval - 2*REAL_SYN_AVG_PVAL
-conservative_adjustment = 0.1*conservative_adjustment
+conservative_adjustment = 0.15*conservative_adjustment
 
 # Compute power for various n
 n = np.linspace(10, 1000, num=50)
@@ -126,7 +126,6 @@ syn_fdr_test_power_for_n = []
 syn_mmd_test_power_for_n = []
 syn_mmd_conservative_test_power_for_n = []
 for i in range(len(n)):
-    print((i+1)/len(n))
     fdr_real, mmd_real, _ = power_calculations(real_dataset_1, real_dataset_2, 0.0, int(n[i]), int(n[i]))
     fdr_syn, mmd_syn, conservative_mmd_syn = power_calculations(syn_dataset_1, syn_dataset_2, conservative_adjustment, int(n[i]), int(n[i]))
 
