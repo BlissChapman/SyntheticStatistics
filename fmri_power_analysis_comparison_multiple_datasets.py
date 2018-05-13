@@ -107,7 +107,7 @@ real_rejecting_voxels_mask = bootstrap_rejecting_voxels_mask(
     real_dataset_1.squeeze(), real_dataset_2.squeeze(), k=k)
 
 # Compute power for various n
-n = np.linspace(10, 100, num=5)
+n = np.linspace(10, 100, num=18)
 fdr_test_p_values_for_n = np.zeros((len(n), num_trials, k))
 syn_fdr_test_p_values_for_n = np.zeros((len(n), num_trials, k))
 mmd_test_p_values_for_n = np.zeros((len(n), num_trials, k))
