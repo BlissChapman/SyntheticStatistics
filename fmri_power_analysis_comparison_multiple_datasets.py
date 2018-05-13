@@ -21,10 +21,12 @@ parser.add_argument('real_dataset_1_dir', help='the directory containing the fir
 parser.add_argument('real_dataset_1_cache_dir', help='the directory to use as a cache for real dataset 1 preprocessing')
 parser.add_argument('syn_dataset_1_dir', help='the directory containing the synthetic fMRI dataset generated from a model trained on real dataset 1')
 parser.add_argument('syn_dataset_1_cache_dir', help='the directory to use as a cache for synthetic dataset 1 preprocessing')
+parser.add_argument('dataset_1_label', help='the label to use when describing contents of dataset 1')
 parser.add_argument('real_dataset_2_dir', help='the directory containing the second real fMRI dataset')
 parser.add_argument('real_dataset_2_cache_dir', help='the directory to use as a cache for real dataset 2 preprocessing')
 parser.add_argument('syn_dataset_2_dir', help='the directory containing the synthetic fMRI dataset generated from a model trained on real dataset 2')
 parser.add_argument('syn_dataset_2_cache_dir', help='the directory to use as a cache for synthetic dataset 2 preprocessing')
+parser.add_argument('dataset_2_label', help='the label to use when describing contents of dataset 1')
 parser.add_argument('output_dir', help='the directory to save power analysis results')
 args = parser.parse_args()
 
@@ -89,13 +91,13 @@ syn_dataset_2_img = invert_preprocessor_scaling(
 
 figure, axes = plt.subplots(nrows=6, ncols=1, figsize=(15, 40))
 plotting.plot_glass_brain(real_dataset_1_img, threshold='auto',
-                          title="[REAL {0}]".format(args.tag), axes=axes[0])
+                          title="[REAL {0}]".format(args.dataset_1_label), axes=axes[0])
 plotting.plot_glass_brain(syn_dataset_1_img, threshold='auto',
-                          title="[SYN {0}]".format(args.tag), axes=axes[1])
+                          title="[SYN {0}]".format(args.dataset_1_label), axes=axes[1])
 plotting.plot_glass_brain(real_dataset_2_img, threshold='auto',
-                          title="[REAL {0}]".format('NON-' + args.tag), axes=axes[2])
+                          title="[REAL {0}]".format(args.dataset_2_label), axes=axes[2])
 plotting.plot_glass_brain(syn_dataset_2_img, threshold='auto',
-                          title="[SYN {0}]".format('NON-' + args.tag), axes=axes[3])
+                          title="[SYN {0}]".format(args.dataset_2_label), axes=axes[3])
 
 # Compute statistical significance weights of each voxel in non-visual vs
 # visual
@@ -219,12 +221,12 @@ axes[4].set_xlabel('Sample Size, Beta = %f' % (fdr_beta))
 axes[4].set_ylabel('Power')
 axes[4].set_ylim([-0.1, 1.1])
 axes[4].legend(loc="upper right")
-np.save('{0}[fmri_power_analysis]_[{1}]_fdr_power_real.npy'.format(
-    OUTPUT_DATA_DIR, args.tag), fdr_test_power_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}]_fdr_power_syn.npy'.format(
-    OUTPUT_DATA_DIR, args.tag), syn_fdr_test_power_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}]_fdr_power_syncon.npy'.format(
-    OUTPUT_DATA_DIR, args.tag), conservative_syn_fdr_test_power)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_real.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), fdr_test_power_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_syn.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_fdr_test_power_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_syncon.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_fdr_test_power)
 
 # Plot curve of n vs MMD test power
 sns.tsplot(data=mmd_test_power_for_n.T, time=n, ci=[
@@ -239,12 +241,12 @@ axes[5].set_ylabel('Power')
 axes[5].set_ylim([-0.1, 1.1])
 axes[5].legend(loc="upper right")
 
-np.save('{0}[fmri_power_analysis]_[{1}]_mmd_power_real.npy'.format(
-    OUTPUT_DATA_DIR, args.tag), mmd_test_power_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}]_mmd_power_syn.npy'.format(
-    OUTPUT_DATA_DIR, args.tag), syn_mmd_test_power_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}]_mmd_power_syncon.npy'.format(
-    OUTPUT_DATA_DIR, args.tag), conservative_syn_mmd_test_power)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_real.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), mmd_test_power_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syn.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_mmd_test_power_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syncon.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_mmd_test_power)
 # # Plot curve of percent rejecting voxels
 # sns.tsplot(data=percent_rejecting_voxels_real_for_n.T, time=n, ci=[
 #            68, 95], color='blue', condition='REAL', ax=axes[6])
@@ -298,5 +300,5 @@ np.save('{0}[fmri_power_analysis]_[{1}]_mmd_power_syncon.npy'.format(
 
 # Save results
 figure.subplots_adjust(hspace=0.5)
-figure.savefig('{0}[fmri_power_analysis]_[{1}].pdf'.format(
-    args.output_dir, args.tag), format='pdf')
+figure.savefig('{0}[fmri_power_analysis]_[{1}_VS_{2}].pdf'.format(
+    args.output_dir, args.dataset_1_label, args.dataset_2_label), format='pdf')
