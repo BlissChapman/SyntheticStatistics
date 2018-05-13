@@ -2,6 +2,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 import argparse
+import cPickle
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -212,18 +213,31 @@ conservative_syn_mmd_test_power = np.mean(
     conservative_syn_mmd_test_p_values_for_n < 0.05, axis=2)
 
 # Save p-values
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_real.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), fdr_test_p_values_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syn.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_fdr_test_p_values_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syncon.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_fdr_test_p_values_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_real.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), mmd_test_p_values_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syn.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_mmd_test_p_values_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syncon.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_mmd_test_p_values_for_n)
+cPickle.dump(fdr_test_p_values_for_n, open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_real.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb"))
+cPickle.dump(syn_fdr_test_p_values_for_n, open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syn.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb"))
+cPickle.dump(conservative_syn_fdr_test_p_values_for_n, open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syncon.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb"))
+cPickle.dump(mmd_test_p_values_for_n, open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_real.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb"))
+cPickle.dump(syn_mmd_test_p_values_for_n, open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syn.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb"))
+cPickle.dump(conservative_syn_mmd_test_p_values_for_n, open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syncon.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb"))
+
+fdr_test_p_values_for_n = cPickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_real.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+syn_fdr_test_p_values_for_n = cPickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syn.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+conservative_syn_fdr_test_p_values_for_n = cPickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syncon.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+mmd_test_p_values_for_n = cPickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_real.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+syn_mmd_test_p_values_for_n = cPickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syn.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+conservative_syn_mmd_test_p_values_for_n = cPickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syncon.pkl'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
 
 # Save power
 np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_real.npy'.format(
