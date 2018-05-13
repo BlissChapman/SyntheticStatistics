@@ -107,7 +107,7 @@ real_rejecting_voxels_mask = bootstrap_rejecting_voxels_mask(
     real_dataset_1.squeeze(), real_dataset_2.squeeze(), k=k)
 
 # Compute power for various n
-n = np.linspace(10, 100, num=25)
+n = np.linspace(10, 100, num=5)
 fdr_test_p_values_for_n = np.zeros((len(n), num_trials, k))
 syn_fdr_test_p_values_for_n = np.zeros((len(n), num_trials, k))
 mmd_test_p_values_for_n = np.zeros((len(n), num_trials, k))
@@ -171,32 +171,8 @@ for i in range(len(n)):
         100 * float(i + 1) / float(len(n))), end='')
 
 # Calculate Beta value for every trial and every sample size
-
-
-def compute_beta(real_pvals, syn_pvals, alpha=0.05, k=50):
-    l = 0.0
-    h = 1.0
-
-    for _ in range(k):
-        beta = (l + h) / 2.0
-
-        syn_reject_too_often = False
-        for n in range(real_pvals.shape[0]):
-            for trial in range(real_pvals.shape[1]):
-                avg_real_rejection = np.mean(real_pvals[n][trial] < alpha)
-                avg_syn_rejection = np.mean(syn_pvals[n][trial] + beta < alpha)
-                if avg_syn_rejection > avg_real_rejection:
-                    syn_reject_too_often = True
-
-        if syn_reject_too_often:
-            l = beta
-        else:
-            h = beta
-
-    return beta
-
-fdr_beta = compute_beta(fdr_test_p_values_for_n, syn_fdr_test_p_values_for_n)
-mmd_beta = compute_beta(mmd_test_p_values_for_n, syn_mmd_test_p_values_for_n)
+fdr_beta = 0.0443541875
+mmd_beta = 0.0277111875
 
 #((len(n), num_trials, k))
 conservative_syn_fdr_test_p_values_for_n = np.copy(
