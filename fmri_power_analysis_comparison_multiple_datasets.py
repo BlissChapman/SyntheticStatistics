@@ -227,17 +227,17 @@ pickle.dump(conservative_syn_mmd_test_p_values_for_n, open('{0}[fmri_power_analy
     OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb"))
 
 fdr_test_p_values_for_n = pickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_real.pkl'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "rb") )
 syn_fdr_test_p_values_for_n = pickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syn.pkl'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "rb") )
 conservative_syn_fdr_test_p_values_for_n = pickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syncon.pkl'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "rb") )
 mmd_test_p_values_for_n = pickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_real.pkl'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "rb") )
 syn_mmd_test_p_values_for_n = pickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syn.pkl'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "rb") )
 conservative_syn_mmd_test_p_values_for_n = pickle.load( open('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syncon.pkl'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "wb") )
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), "rb") )
 
 # Save power
 np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_real.npy'.format(
