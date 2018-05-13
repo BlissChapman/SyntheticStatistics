@@ -193,11 +193,12 @@ def compute_beta(real_pvals, syn_pvals, alpha=0.05, k=50):
 
     return beta
 
-fdr_beta = 0.049997 # avg = 0.0443541875
-mmd_beta = 0.0277111875
 
 computed_fdr_beta = compute_beta(fdr_test_p_values_for_n, syn_fdr_test_p_values_for_n)
 computed_mmd_beta = compute_beta(mmd_test_p_values_for_n, syn_mmd_test_p_values_for_n)
+
+fdr_beta = 0.049997 # avg = 0.0443541875
+mmd_beta = 0.0277111875
 
 #((len(n), num_trials, k))
 conservative_syn_fdr_test_p_values_for_n = np.copy(
@@ -209,6 +210,34 @@ conservative_syn_mmd_test_p_values_for_n = np.copy(
     syn_mmd_test_p_values_for_n) + mmd_beta
 conservative_syn_mmd_test_power = np.mean(
     conservative_syn_mmd_test_p_values_for_n < 0.05, axis=2)
+
+# Save p-values
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_real.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), fdr_test_p_values_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syn.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_fdr_test_p_values_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_p_vals_syncon.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_fdr_test_p_values_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_real.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), mmd_test_p_values_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syn.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_mmd_test_p_values_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syncon.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_mmd_test_p_values_for_n)
+
+# Save power
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_real.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), fdr_test_power_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_syn.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_fdr_test_power_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_syncon.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_fdr_test_power)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_real.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), mmd_test_power_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syn.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_mmd_test_power_for_n)
+np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syncon.npy'.format(
+    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_mmd_test_power)
 
 # Plot curve of n vs FDR corrected t test power
 sns.tsplot(data=fdr_test_power_for_n.T, time=n, ci=[
@@ -222,12 +251,6 @@ axes[4].set_xlabel('Sample Size, Applied Beta = %f, Computed Beta = %f' % (fdr_b
 axes[4].set_ylabel('Power')
 axes[4].set_ylim([-0.1, 1.1])
 axes[4].legend(loc="upper right")
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_real.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), fdr_test_power_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_syn.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_fdr_test_power_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_fdr_power_syncon.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_fdr_test_power)
 
 # Plot curve of n vs MMD test power
 sns.tsplot(data=mmd_test_power_for_n.T, time=n, ci=[
@@ -242,12 +265,7 @@ axes[5].set_ylabel('Power')
 axes[5].set_ylim([-0.1, 1.1])
 axes[5].legend(loc="upper right")
 
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_real.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), mmd_test_power_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syn.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), syn_mmd_test_power_for_n)
-np.save('{0}[fmri_power_analysis]_[{1}_VS_{2}]_mmd_power_syncon.npy'.format(
-    OUTPUT_DATA_DIR, args.dataset_1_label, args.dataset_2_label), conservative_syn_mmd_test_power)
+
 # # Plot curve of percent rejecting voxels
 # sns.tsplot(data=percent_rejecting_voxels_real_for_n.T, time=n, ci=[
 #            68, 95], color='blue', condition='REAL', ax=axes[6])
