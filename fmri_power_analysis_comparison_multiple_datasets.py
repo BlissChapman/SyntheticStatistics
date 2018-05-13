@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import argparse
 import matplotlib.pyplot as plt
 import numpy as np
@@ -76,13 +79,13 @@ syn_dataset_2 = np.array(syn_dataset_2[:syn_dataset_length])
 
 # Plot examples from datasets
 real_dataset_1_img = invert_preprocessor_scaling(
-    real_dataset_1[0].squeeze(), real_dataset_brainpedia.preprocessor)
+    real_dataset_1[0].squeeze(), real_dataset_1_brainpedia.preprocessor)
 real_dataset_2_img = invert_preprocessor_scaling(
-    real_dataset_2[0].squeeze(), real_dataset_brainpedia.preprocessor)
+    real_dataset_2[0].squeeze(), real_dataset_2_brainpedia.preprocessor)
 syn_dataset_1_img = invert_preprocessor_scaling(
-    syn_dataset_1[0].squeeze(), syn_dataset_brainpedia.preprocessor)
+    syn_dataset_1[0].squeeze(), syn_dataset_2_brainpedia.preprocessor)
 syn_dataset_2_img = invert_preprocessor_scaling(
-    syn_dataset_2[2].squeeze(), syn_dataset_brainpedia.preprocessor)
+    syn_dataset_2[2].squeeze(), syn_dataset_2_brainpedia.preprocessor)
 
 figure, axes = plt.subplots(nrows=6, ncols=1, figsize=(15, 40))
 plotting.plot_glass_brain(real_dataset_1_img, threshold='auto',
