@@ -107,7 +107,7 @@ real_rejecting_voxels_mask = bootstrap_rejecting_voxels_mask(
     real_dataset_1.squeeze(), real_dataset_2.squeeze(), k=k)
 
 # Compute power for various n
-n = np.linspace(10, 100, num=25)
+n = np.linspace(10, 100, num=18)
 fdr_test_p_values_for_n = np.zeros((len(n), num_trials, k))
 syn_fdr_test_p_values_for_n = np.zeros((len(n), num_trials, k))
 mmd_test_p_values_for_n = np.zeros((len(n), num_trials, k))
@@ -193,7 +193,7 @@ def compute_beta(real_pvals, syn_pvals, alpha=0.05, k=50):
 
     return beta
 
-fdr_beta = 0.0443541875
+fdr_beta = 0.049997 # avg = 0.0443541875
 mmd_beta = 0.0277111875
 
 computed_fdr_beta = compute_beta(fdr_test_p_values_for_n, syn_fdr_test_p_values_for_n)
